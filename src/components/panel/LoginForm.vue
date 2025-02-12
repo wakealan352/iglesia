@@ -1,23 +1,51 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { auth } from "../../lib/api";
 
 const username = ref("");
 const password = ref("");
 const error = ref("");
+const isLoading = ref(false);
+const isSuccess = ref(false);
+const progress = ref(0);
 
 const handleSubmit = async () => {
   try {
+    isLoading.value = true;
+    error.value = "";
+    progress.value = 0;
+
     const response = await auth.login({
       username: username.value,
       password: password.value,
     });
+
+    // Set success state immediately
+    isSuccess.value = true;
+
+    // Trigger success animation
+    const animationDuration = 1000; // 1 second
+    const steps = 100;
+    const stepDuration = animationDuration / steps;
+
+    for (let i = 1; i <= steps; i++) {
+      setTimeout(() => {
+        progress.value = i;
+      }, i * stepDuration);
+    }
+
     localStorage.setItem("token", response.data.token);
 
     // Redirigir a la página de administración de eventos después de iniciar sesión
-    window.location.href = "/admin/eventos";
+    setTimeout(() => {
+      window.location.href = "/admin/eventos";
+    }, 1000);
   } catch (err: any) {
     error.value = err.response?.data?.mensaje || "Error al iniciar sesión";
+    isSuccess.value = false;
+    progress.value = 0;
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -59,11 +87,27 @@ const handleSubmit = async () => {
       {{ error }}
     </div>
 
-    <button
-      type="submit"
-      class="w-full bg-teal-500 dark:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors duration-200"
-    >
-      Iniciar Sesión
-    </button>
+    <div class="relative">
+      <button
+        type="submit"
+        class="w-full font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-colors duration-300 relative text-white"
+        :class="[isSuccess ? 'text-white' : 'bg-teal-500 hover:bg-teal-600']"
+        :disabled="isLoading || isSuccess"
+      >
+        <div class="relative z-10">
+          {{
+            isLoading
+              ? "Iniciando sesión..."
+              : isSuccess
+              ? "Sesión iniciada"
+              : "Iniciar Sesión"
+          }}
+        </div>
+        <div
+          class="absolute inset-0 bg-green-400 dark:bg-green-500 transition-all duration-1000 ease-out"
+          :style="{ clipPath: `inset(0 ${100 - progress}% 0 0)` }"
+        ></div>
+      </button>
+    </div>
   </form>
 </template>
