@@ -78,7 +78,7 @@
         <!-- Botón de modo oscuro -->
         <button
           @click="toggleDarkMode"
-          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700 float-right"
+          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700 float-right dark-mode-button"
         >
           <!-- Ícono para modo claro -->
           <svg
@@ -507,5 +507,31 @@ export default {
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
+}
+
+/* Animación para el botón de modo oscuro */
+@keyframes rotateMode {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(0.8);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.dark-mode-button svg {
+  animation: rotateMode 0.5s ease-in-out;
+}
+
+/* Estilos globales para la transición del modo oscuro */
+:root {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:root * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 </style>
