@@ -107,13 +107,11 @@ export default {
   setup() {
     const slides = ref([]);
     const error = ref("");
-    const isLoading = ref(false);
+    const isLoading = ref(true);
     const modules = [Navigation, Pagination, Autoplay, EffectFade];
 
     const loadEvents = async () => {
       try {
-        isLoading.value = true;
-
         // Cargar anuncios del JSON local
         const localSlides = anunciosData.anuncios.map((anuncio) => ({
           image: anuncio.image,
