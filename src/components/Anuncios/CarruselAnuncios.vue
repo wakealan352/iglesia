@@ -1,13 +1,14 @@
 <template>
   <section class="bg-gris">
     <div
-      class="container mx-auto px-2 py-8 lg:px-32 transition duration-300 ease-in-out font-asap"
+      class="container mx-auto px-2 py-4 lg:px-32 transition duration-300 ease-in-out font-asap"
     >
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="text-3xl font-semibold text-morado ml-1 dark:text-white">
-          Anuncios
-        </h2>
+    <div class="flex flex-col mb-2 px-3 pt-6">
+      <div class="flex items-center gap-3 mb-2">
+        <i class="fas fa-bullhorn text-3xl text-teal-500"></i>
+        <h2 class="text-3xl font-semibold dark:text-white">Anuncios</h2>
       </div>
+    </div>
 
       <div v-if="error" class="text-red-500 text-center mb-4">{{ error }}</div>
       <div

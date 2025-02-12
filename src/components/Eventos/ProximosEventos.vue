@@ -2,10 +2,10 @@
   <div
     class="bg-gray-100 dark:bg-slate-600 px-1 sm:px-6 2xl:px-80 pb-10 transition duration-300 ease-in-out selection:bg-teal-500 selection:text-white"
   >
-    <div class="flex flex-col mb-8 px-3 pt-10">
+    <div class="flex flex-col mb-2 px-3 pt-10">
       <div class="flex items-center gap-3 mb-2">
         <i class="fas fa-calendar-alt text-3xl text-teal-500"> </i>
-        <h2 class="text-3xl font-bold dark:text-white">Próximos eventos</h2>
+        <h2 class="text-3xl font-semibold dark:text-white">Próximos eventos</h2>
       </div>
       <p class="text-gray-600 dark:text-gray-300 ml-1">Mantente al día con nuestras próximas actividades y servicios</p>
     </div>
