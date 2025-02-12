@@ -16,7 +16,7 @@
         <div class="relative">
           <img
             src="https://i.ibb.co/HtyYRq5/logo.png"
-            class="h-16 transition-transform duration-300 ease-in-out group-hover:scale-105"
+            class="h-14 transition-transform duration-300 ease-in-out group-hover:scale-105"
             alt="Logo iglesia"
           />
           <div
@@ -24,7 +24,7 @@
           ></div>
         </div>
         <span
-          class="self-center text-md font-semibold whitespace-nowrap text-white text-center transition-colors duration-300 ease-in-out group-hover:text-teal-500"
+          class="self-center text-[14px] font-semibold whitespace-nowrap text-white text-center transition-colors duration-300 ease-in-out group-hover:text-teal-500"
           >Iglesia Bautista <br />
           Su Gracia es Mayor</span
         >
