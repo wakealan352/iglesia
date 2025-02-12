@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineEmits, defineProps, watch } from "vue";
+import { ref, defineEmits, defineProps, watch, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   event: {
@@ -102,6 +102,20 @@ watch([selectedImageOption, customImageUrl], () => {
   }
 });
 
+// Add body class when modal is open
+watch(() => props.isOpen, (isOpen) => {
+  if (isOpen) {
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
+});
+
+// Clean up on component unmount
+onUnmounted(() => {
+  document.body.classList.remove('modal-open');
+});
+
 const handleSubmit = () => {
   emit("submit", formData.value);
 };
@@ -110,74 +124,88 @@ const handleSubmit = () => {
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 h-full w-full z-[9999] bg-black/70 flex items-center justify-center overflow-y-auto py-4"
+    class="fixed inset-0 z-50 overflow-y-auto"
   >
-    <div
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-full max-w-md mx-4 my-auto relative max-h-[90vh] flex flex-col"
-    >
-      <!-- Header section - fixed -->
-      <div class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-t-lg sticky top-0 z-10">
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold text-black dark:text-white">
-            {{ isEdit ? "Editar Anuncio" : "Nuevo Anuncio" }}
-          </h3>
-          <button
-            @click="$emit('cancel')"
-            class="text-gray-700 hover:text-black dark:text-gray-400 dark:hover:text-gray-200 transition duration-300"
-          >
-            <svg
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div
+        class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+      ></div>
+      <div
+        class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform transition-all border border-gray-200 dark:border-gray-700"
+      >
+        <!-- Modal header -->
+        <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-t-lg">
+          <div class="flex justify-between items-center">
+            <h3
+              class="text-lg font-semibold text-gray-900 dark:text-gray-100"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              {{ isEdit ? "Editar Anuncio" : "Nuevo Anuncio" }}
+            </h3>
+            <button
+              @click="$emit('cancel')"
+              class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition duration-300"
+            >
+              <svg
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-      <!-- Scrollable content -->
-      <div class="overflow-y-auto flex-1">
-        <div class="p-4">
-          <div class="bg-white dark:bg-gray-800 max-w-xl mx-auto">
-            <form @submit.prevent="handleSubmit" class="space-y-6">
-              <div>
-                <label
-                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                  >Título (Opcional)</label
-                >
+        <!-- Modal content -->
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-b-lg">
+          <form @submit.prevent="handleSubmit" class="space-y-6">
+            <div>
+              <div class="relative">
                 <input
                   v-model="formData.titulo"
                   type="text"
-                  placeholder="Ingrese el título"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                  id="titulo"
+                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
                 />
-              </div>
-              <div>
                 <label
-                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                  >Descripción (Opcional)</label
+                  for="titulo"
+                  class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
                 >
+                  Título (Opcional)
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="relative">
                 <textarea
                   v-model="formData.descripcion"
+                  id="descripcion"
                   rows="4"
-                  placeholder="Ingrese la descripción"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
                 ></textarea>
-              </div>
-              <div>
                 <label
-                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                  >Imagen</label
+                  for="descripcion"
+                  class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
                 >
+                  Descripción (Opcional)
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="relative">
                 <select
                   v-model="selectedImageOption"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                  id="imagen"
+                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 >
                   <option
                     v-for="option in imageOptions"
@@ -187,69 +215,121 @@ const handleSubmit = () => {
                     {{ option.label }}
                   </option>
                 </select>
-                <!-- Preview of selected image -->
-                <div class="mt-4 flex justify-center">
-                  <img
-                    :src="formData.image"
-                    alt="Vista previa"
-                    class="h-48 w-full object-cover rounded-lg shadow-md"
-                  />
-                </div>
-                <!-- Custom image URL input -->
-                <div v-if="selectedImageOption === 'custom'" class="mt-4">
+                <label
+                  for="imagen"
+                  class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
+                >
+                  Imagen
+                </label>
+              </div>
+
+              <!-- Preview of selected image -->
+              <div class="mt-4 flex justify-center">
+                <img
+                  :src="formData.image"
+                  alt="Vista previa"
+                  class="h-48 w-full object-cover rounded-lg shadow-md"
+                />
+              </div>
+
+              <!-- Custom image URL input -->
+              <div v-if="selectedImageOption === 'custom'" class="mt-4">
+                <div class="relative">
                   <input
                     v-model="customImageUrl"
                     type="text"
-                    placeholder="Ingrese la URL de la imagen"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                    id="customUrl"
+                    class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
                   />
+                  <label
+                    for="customUrl"
+                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
+                  >
+                    URL de la imagen
+                  </label>
                 </div>
               </div>
-              <div>
-                <label
-                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Texto del botón (Opcional)
-                </label>
+            </div>
+
+            <div>
+              <div class="relative">
                 <input
                   v-model="formData.textoBoton"
                   type="text"
-                  placeholder="Ingrese el texto del botón"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                  id="textoBoton"
+                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
                 />
-              </div>
-              <div>
                 <label
-                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                  for="textoBoton"
+                  class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
                 >
-                  Link del botón (Opcional)
+                  Texto del botón (Opcional)
                 </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="relative">
                 <input
                   v-model="formData.linkBoton"
                   type="text"
-                  placeholder="Ingrese el link del botón"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                  id="linkBoton"
+                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
                 />
-              </div>
-              <div class="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  @click="$emit('cancel')"
-                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition duration-300 ease-in-out"
+                <label
+                  for="linkBoton"
+                  class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
                 >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  class="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-md shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                >
-                  {{ isEdit ? "Actualizar" : "Crear" }}
-                </button>
+                  Link del botón (Opcional)
+                </label>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button
+                type="submit"
+                class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors duration-300"
+              >
+                {{ isEdit ? "Actualizar" : "Crear" }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style>
+:root {
+  height: 100%;
+}
+
+body.modal-open {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Asegurar que el modal esté siempre por encima */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+}
+
+/* Prevenir que otros elementos se superpongan */
+* {
+  z-index: auto;
+}
+</style>
