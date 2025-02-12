@@ -34,9 +34,9 @@
       <div class="flex md:order-2 md:space-x-0 rtl:space-x-reverse">
         <!-- Botón de login/admin -->
         <div class="relative mr-2">
-          <a
+          <button
             v-if="!isAuthenticated"
-            href="/login"
+            @click="openLoginModal"
             class="h-10 w-10 rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
           >
             <svg
@@ -52,7 +52,7 @@
                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
               />
             </svg>
-          </a>
+          </button>
 
           <button
             v-else
@@ -318,17 +318,22 @@
 
   <!-- Componente de barra de progreso -->
   <BarraProgreso />
+
+  <!-- Login Form -->
+  <LoginForm ref="loginForm" @login-success="handleLoginSuccess" />
 </template>
 
 <script>
 import BarraProgreso from "./BarraProgreso.vue";
 import AdminSidebar from "./AdminSidebar.vue";
+import LoginForm from "./panel/LoginForm.vue";
 import { checkAuth } from "../middleware/auth";
 
 export default {
   components: {
     BarraProgreso,
     AdminSidebar,
+    LoginForm,
   },
   name: "MenuInicio",
   data() {
@@ -447,6 +452,12 @@ export default {
     updateCurrentPath() {
       this.currentPath = window.location.pathname;
       this.updateActiveLink();
+    },
+    handleLoginSuccess(data) {
+      this.checkAuthStatus();
+    },
+    openLoginModal() {
+      this.$refs.loginForm.openModal();
     },
   },
   mounted() {
