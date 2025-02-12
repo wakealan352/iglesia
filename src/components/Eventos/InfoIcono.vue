@@ -4,11 +4,14 @@
     :class="[
       'absolute -top-2 -right-2 rounded-full flex items-center justify-center hover:scale-110 transition duration-300 ease-in-out',
       sizeClasses,
-      texto === 'Canasta de amor' ? 'bg-red-500' : 'bg-blue-500',
-      texto === 'Cena del Señor' ? 'bg-red-700' : 'bg-blue-500',
-      texto === 'Reunión de damas' ? 'bg-pink-500' : 'bg-blue-500',
-      texto === 'Domingo misionero' ? 'bg-green-500' : 'bg-blue-500',
-      texto === 'Culto de oración' ? 'bg-violet-500' : 'bg-blue-500',
+      {
+        'bg-red-500': texto === 'Canasta de amor',
+        'bg-red-700': texto === 'Cena del Señor',
+        'bg-pink-500': texto === 'Reunión de damas',
+        'bg-green-500': texto === 'Domingo misionero',
+        'bg-violet-500': texto === 'Culto de oración',
+        'bg-teal-500': !['Canasta de amor', 'Cena del Señor', 'Reunión de damas', 'Domingo misionero', 'Culto de oración'].includes(texto)
+      }
     ]"
   >
     <!-- Icono para 'Cena del Señor' -->
@@ -186,11 +189,13 @@ export default {
 
   mounted() {
     this.$nextTick(() => {
-      tippy(this.$refs.tooltip1, {
-        content: this.tooltipText,
-        placement: "top",
-        arrow: true,
-      });
+      if (this.texto) {
+        tippy(this.$refs.tooltip1, {
+          content: this.texto,
+          placement: "top",
+          arrow: true,
+        });
+      }
     });
   },
 
@@ -212,7 +217,7 @@ export default {
     },
 
     tooltipText() {
-      return this.texto === null ? "Banner evento disponible" : this.texto;
+      return this.texto;
     },
   },
 };
