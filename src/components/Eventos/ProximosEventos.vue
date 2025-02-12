@@ -231,6 +231,11 @@ export default {
     };
 
     const isUrl = (str) => {
+      if (!str) return false;
+      // Agregar soporte para URLs que empiezan con www.
+      if (str.startsWith('www.')) {
+        str = 'http://' + str;
+      }
       try {
         new URL(str);
         return true;

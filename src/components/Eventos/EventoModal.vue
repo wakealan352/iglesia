@@ -161,6 +161,11 @@ export default {
       return `${formattedHour}:${minutes} ${ampm}`;
     },
     isUrl(str) {
+      if (!str) return false;
+      // Agregar soporte para URLs que empiezan con www.
+      if (str.startsWith('www.')) {
+        str = 'http://' + str;
+      }
       try {
         new URL(str);
         return true;
