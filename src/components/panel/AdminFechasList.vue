@@ -7,15 +7,30 @@
         </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona las fechas importantes</p>
       </div>
-      <button
-        @click="openModal()"
-        class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-lg hover:from-teal-700 hover:to-teal-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-md flex items-center justify-center gap-2 text-sm font-medium"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Nueva Fecha
-      </button>
+      <div class="flex gap-2">
+        <!-- Menú de acciones masivas - Solo visible en escritorio -->
+        <div v-if="selectedFechas.length > 0" class="hidden md:flex items-center gap-2">
+          <span class="text-sm text-gray-600 dark:text-gray-300">{{ selectedFechas.length }} seleccionados</span>
+          <button
+            @click="deleteSelected"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm font-medium flex items-center gap-1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Eliminar seleccionados
+          </button>
+        </div>
+        <button
+          @click="openModal()"
+          class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-lg hover:from-teal-700 hover:to-teal-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-md flex items-center justify-center gap-2 text-sm font-medium"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Nueva Fecha
+        </button>
+      </div>
     </div>
 
     <!-- Notificación de Error -->
@@ -54,6 +69,14 @@
       >
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-8">
+              <input
+                type="checkbox"
+                :checked="isAllSelected"
+                @change="toggleSelectAll"
+                class="rounded border-gray-300 text-teal-600 shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
+              >
+            </th>
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
             >
@@ -104,6 +127,14 @@
             :key="fecha.id"
             class="hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
           >
+            <td class="px-6 py-4 whitespace-nowrap">
+              <input
+                type="checkbox"
+                v-model="selectedFechas"
+                :value="fecha.id"
+                class="rounded border-gray-300 text-teal-600 shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
+              >
+            </td>
             <td class="px-6 py-4 whitespace-nowrap font-medium">
               {{ index + 1 }}
             </td>
@@ -569,6 +600,8 @@ export default {
       swipeX: 0,
       swipeStartX: 0,
       isLoading: true,
+      selectedFechas: [],
+      isAllSelected: false,
     };
   },
   async created() {
@@ -732,6 +765,31 @@ export default {
       }
       this.activeCard = null;
       this.swipeX = 0;
+    },
+    toggleSelectAll() {
+      this.selectedFechas = this.isAllSelected ? [] : this.fechas.map(f => f.id);
+      this.isAllSelected = !this.isAllSelected;
+    },
+    async deleteSelected() {
+      if (window.confirm("¿Estás seguro de que deseas eliminar las fechas seleccionadas?")) {
+        try {
+          this.isLoading = true;
+          await Promise.all(
+            this.selectedFechas.map(id => fechas.delete(id))
+          );
+          
+          await this.loadFechas();
+          
+          this.selectedFechas = [];
+          this.isAllSelected = false;
+          
+        } catch (error) {
+          console.error("Error al eliminar fechas seleccionadas:", error);
+          this.errorMessage = "Error al eliminar las fechas seleccionadas";
+        } finally {
+          this.isLoading = false;
+        }
+      }
     },
   },
 };
