@@ -1,14 +1,20 @@
 <template>
   <div class="space-y-6 mt-24">
-    <div class="flex justify-between items-center">
-      <h1 class="text-xl sm:text-3xl font-bold text-gray-800 dark:text-white">
-        Administración de Fechas
-      </h1>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-0">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent">
+          Administración de Fechas
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona las fechas importantes</p>
+      </div>
       <button
         @click="openModal()"
-        class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition duration-300 text-sm"
+        class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-lg hover:from-teal-700 hover:to-teal-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-md flex items-center justify-center gap-2 text-sm font-medium"
       >
-        Agregar Nueva Fecha
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Nueva Fecha
       </button>
     </div>
 
