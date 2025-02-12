@@ -110,13 +110,13 @@ const handleSubmit = () => {
 <template>
   <div
     v-if="isOpen"
-    class="fixed top-[88px] inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 overflow-y-auto py-4"
+    class="fixed inset-0 h-full w-full z-[9999] bg-black/70 flex items-center justify-center overflow-y-auto py-4"
   >
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-full max-w-md mx-4 mt-auto mb-auto relative"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-full max-w-md mx-4 my-auto relative max-h-[90vh] flex flex-col"
     >
-      <!-- Modified header section -->
-      <div class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-t-lg">
+      <!-- Header section - fixed -->
+      <div class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-t-lg sticky top-0 z-10">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-black dark:text-white">
             {{ isEdit ? "Editar Anuncio" : "Nuevo Anuncio" }}
@@ -141,111 +141,113 @@ const handleSubmit = () => {
           </button>
         </div>
       </div>
-      <!-- Form content with padding -->
-      <div class="p-4">
-        <div class="bg-white dark:bg-gray-800 max-w-xl mx-auto">
-          <form @submit.prevent="handleSubmit" class="space-y-6">
-            <div>
-              <label
-                class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                >Título (Opcional)</label
-              >
-              <input
-                v-model="formData.titulo"
-                type="text"
-                placeholder="Ingrese el título"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
-              />
-            </div>
-            <div>
-              <label
-                class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                >Descripción (Opcional)</label
-              >
-              <textarea
-                v-model="formData.descripcion"
-                rows="4"
-                placeholder="Ingrese la descripción"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
-              ></textarea>
-            </div>
-            <div>
-              <label
-                class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                >Imagen</label
-              >
-              <select
-                v-model="selectedImageOption"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
-              >
-                <option
-                  v-for="option in imageOptions"
-                  :key="option.value"
-                  :value="option.value"
+      <!-- Scrollable content -->
+      <div class="overflow-y-auto flex-1">
+        <div class="p-4">
+          <div class="bg-white dark:bg-gray-800 max-w-xl mx-auto">
+            <form @submit.prevent="handleSubmit" class="space-y-6">
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                  >Título (Opcional)</label
                 >
-                  {{ option.label }}
-                </option>
-              </select>
-              <!-- Preview of selected image -->
-              <div class="mt-4 flex justify-center">
-                <img
-                  :src="formData.image"
-                  alt="Vista previa"
-                  class="h-48 w-full object-cover rounded-lg shadow-md"
-                />
-              </div>
-              <!-- Custom image URL input -->
-              <div v-if="selectedImageOption === 'custom'" class="mt-4">
                 <input
-                  v-model="customImageUrl"
+                  v-model="formData.titulo"
                   type="text"
-                  placeholder="Ingrese la URL de la imagen"
+                  placeholder="Ingrese el título"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
                 />
               </div>
-            </div>
-            <div>
-              <label
-                class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Texto del botón (Opcional)
-              </label>
-              <input
-                v-model="formData.textoBoton"
-                type="text"
-                placeholder="Ingrese el texto del botón"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
-              />
-            </div>
-            <div>
-              <label
-                class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Link del botón (Opcional)
-              </label>
-              <input
-                v-model="formData.linkBoton"
-                type="text"
-                placeholder="Ingrese el link del botón"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
-              />
-            </div>
-            <div class="flex justify-end space-x-4">
-              <button
-                type="button"
-                @click="$emit('cancel')"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition duration-300 ease-in-out"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                class="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-md shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-              >
-                {{ isEdit ? "Actualizar" : "Crear" }}
-              </button>
-            </div>
-          </form>
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                  >Descripción (Opcional)</label
+                >
+                <textarea
+                  v-model="formData.descripcion"
+                  rows="4"
+                  placeholder="Ingrese la descripción"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                ></textarea>
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                  >Imagen</label
+                >
+                <select
+                  v-model="selectedImageOption"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                >
+                  <option
+                    v-for="option in imageOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+                <!-- Preview of selected image -->
+                <div class="mt-4 flex justify-center">
+                  <img
+                    :src="formData.image"
+                    alt="Vista previa"
+                    class="h-48 w-full object-cover rounded-lg shadow-md"
+                  />
+                </div>
+                <!-- Custom image URL input -->
+                <div v-if="selectedImageOption === 'custom'" class="mt-4">
+                  <input
+                    v-model="customImageUrl"
+                    type="text"
+                    placeholder="Ingrese la URL de la imagen"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Texto del botón (Opcional)
+                </label>
+                <input
+                  v-model="formData.textoBoton"
+                  type="text"
+                  placeholder="Ingrese el texto del botón"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Link del botón (Opcional)
+                </label>
+                <input
+                  v-model="formData.linkBoton"
+                  type="text"
+                  placeholder="Ingrese el link del botón"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-300 transition duration-300"
+                />
+              </div>
+              <div class="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  @click="$emit('cancel')"
+                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition duration-300 ease-in-out"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  class="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-md shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                >
+                  {{ isEdit ? "Actualizar" : "Crear" }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
