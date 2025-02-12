@@ -9,7 +9,7 @@ const props = defineProps({
       descripcion: "",
       textoBoton: "",
       linkBoton: "",
-      image: "https://i.ibb.co/hcqMNSY/james-lee-0-YQz7-M2fc-YY-unsplash.jpg",
+      image: "/imagenes/default.png",
     }),
   },
   isEdit: {
@@ -27,7 +27,7 @@ const emit = defineEmits(["submit", "cancel"]);
 const formData = ref({ ...props.event });
 const selectedImageOption = ref("");
 const customImageUrl = ref("");
-const defaultImageUrl = "https://i.ibb.co/FxQKF5N/fondo-logo.jpg";
+const defaultImageUrl = "https://i.ibb.co/bM0Y4b9K/Captura-de-pantalla-2025-02-12-125243.png";
 
 const imageOptions = [
   {
