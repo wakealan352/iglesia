@@ -130,116 +130,79 @@
             <li
               v-for="fecha in fechas"
               :key="fecha.id"
-              class="p-4 hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-150 ease-in-out"
+              class="relative overflow-hidden touch-pan-y"
+              @touchstart="handleTouchStart($event, fecha.id)"
+              @touchmove="handleTouchMove($event, fecha.id)"
+              @touchend="handleTouchEnd(fecha.id)"
             >
-              <div class="flex flex-col space-y-2">
-                <div class="flex justify-between items-start">
-                  <h3
-                    class="text-lg font-semibold text-gray-900 dark:text-white"
-                  >
-                    {{ fecha.titulo }}
-                  </h3>
-                  <div class="flex flex-col items-end text-sm">
-                    <span class="text-gray-500 dark:text-gray-400">
-                      {{ formatDate(fecha.fecha) }}
-                    </span>
-                    <span
-                      :class="getDiasRestantesClass(fecha.fecha)"
-                      class="mt-1"
-                    >
-                      {{ getDiasRestantes(fecha.fecha) }}
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300"
-                >
-                  <div class="flex items-center">
-                    <svg
-                      class="h-4 w-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {{ fecha.hora }}
-                  </div>
-                  <div class="flex items-center">
-                    <svg
-                      class="h-4 w-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    {{ fecha.lugar }}
-                  </div>
-                </div>
-                <div
-                  class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-600"
-                >
-                  <div class="flex items-center space-x-2">
-                    <span
-                      v-if="fecha.banner"
-                      title="Tiene banner"
-                      class="text-green-500"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      v-if="fecha.infoIconoTexto"
-                      :class="`h-4 w-4 rounded-full ${getColorClass(
-                        fecha.infoIconoTexto
-                      )}`"
-                      :title="fecha.infoIconoTexto"
-                    ></span>
-                  </div>
-                  <div class="flex space-x-2">
-                    <button
-                      @click="openModal(fecha)"
-                      class="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      @click="deleteFecha(fecha.id)"
-                      class="px-3 py-1 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
-                    >
-                      Eliminar
-                    </button>
+              <!-- Acciones de deslizamiento -->
+              <div class="absolute inset-y-0 left-0 w-20 bg-blue-500 flex items-center justify-center transform transition-transform duration-200"
+                   :style="{ transform: `translateX(${-100 + (activeCard === fecha.id ? swipeX : 0)}%)` }">
+                <button class="text-white" @click="openModal(fecha)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+              <div class="absolute inset-y-0 right-0 w-20 bg-red-500 flex items-center justify-center transform transition-transform duration-200"
+                   :style="{ transform: `translateX(${100 + (activeCard === fecha.id ? swipeX : 0)}%)` }">
+                <button class="text-white" @click="deleteFecha(fecha.id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+              <div class="relative bg-white dark:bg-gray-700 transform transition-transform duration-200"
+                   :style="{ transform: `translateX(${activeCard === fecha.id ? swipeX : 0}px)` }">
+                <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
+                  <div class="flex flex-col space-y-2">
+                    <div class="flex justify-between items-start">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        {{ fecha.titulo }}
+                      </h3>
+                      <div class="flex flex-col items-end text-sm">
+                        <span class="text-gray-500 dark:text-gray-400">
+                          {{ formatDate(fecha.fecha) }}
+                        </span>
+                        <span :class="getDiasRestantesClass(fecha.fecha)" class="mt-1">
+                          {{ getDiasRestantes(fecha.fecha) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300">
+                      <div class="flex items-center">
+                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ fecha.hora }}
+                      </div>
+                      <div class="flex items-center">
+                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {{ fecha.lugar }}
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-600">
+                      <div class="flex items-center space-x-2">
+                        <span v-if="fecha.banner" title="Tiene banner" class="text-green-500">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </span>
+                        <span v-if="fecha.infoIconoTexto" :class="`h-4 w-4 rounded-full ${getColorClass(fecha.infoIconoTexto)}`" :title="fecha.infoIconoTexto"></span>
+                      </div>
+                      <!-- Indicadores de deslizamiento -->
+                      <div class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" :class="activeCard === fecha.id && swipeX < 0 ? 'text-red-500' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" :class="activeCard === fecha.id && swipeX > 0 ? 'text-blue-500' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -575,8 +538,11 @@ export default {
         tipoIcono: "",
         infoIconoTexto: "",
         banner: "",
-        tieneBanner: false, // Cambiado a boolean en lugar de 0/1
+        tieneBanner: false,
       },
+      activeCard: null,
+      swipeX: 0,
+      swipeStartX: 0,
     };
   },
   async created() {
@@ -603,12 +569,11 @@ export default {
       this.editingFecha = fecha;
       if (fecha) {
         this.fechaForm = { ...fecha };
-        this.fechaForm.tieneBanner = !!fecha.banner; // Convertir a boolean
+        this.fechaForm.tieneBanner = !!fecha.banner;
         if (this.fechaForm.fecha) {
           const fechaObj = new Date(this.fechaForm.fecha);
           this.fechaForm.fecha = fechaObj.toISOString().split("T")[0];
         }
-        // Configurar el tipo de icono basado en el texto existente
         const opcionesPredefinidas = [
           "Canasta de amor",
           "Cena del Señor",
@@ -645,10 +610,8 @@ export default {
     },
     async saveFecha() {
       try {
-        // Simplificar la asignación del texto del icono
         this.fechaForm.infoIconoTexto = this.fechaForm.tipoIcono;
 
-        // Manejar el valor del banner
         if (!this.fechaForm.tieneBanner) {
           this.fechaForm.banner = null;
         }
@@ -717,6 +680,29 @@ export default {
       if (dias <= 7) return "text-red-600 dark:text-red-400 font-semibold";
       if (dias <= 30) return "text-yellow-600 dark:text-yellow-400";
       return "text-green-600 dark:text-green-400";
+    },
+    handleTouchStart(event, id) {
+      this.activeCard = id;
+      this.swipeX = 0;
+      this.swipeStartX = event.touches[0].clientX;
+    },
+    handleTouchMove(event, id) {
+      if (this.activeCard !== id) return;
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - this.swipeStartX;
+      this.swipeX = Math.max(Math.min(deltaX, 80), -80);
+    },
+    handleTouchEnd(id) {
+      if (this.activeCard !== id) return;
+      if (Math.abs(this.swipeX) > 40) {
+        if (this.swipeX > 0) {
+          this.openModal(this.fechas.find(f => f.id === id));
+        } else {
+          this.deleteFecha(id);
+        }
+      }
+      this.activeCard = null;
+      this.swipeX = 0;
     },
   },
 };
