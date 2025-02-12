@@ -3,7 +3,7 @@
     <div
       class="container mx-auto px-2 py-4 lg:px-32 transition duration-300 ease-in-out font-asap"
     >
-    <div class="flex flex-col mb-2 px-3 pt-6">
+    <div class="flex flex-col mb-2 px-3">
       <div class="flex items-center gap-3 mb-2">
         <i class="fas fa-bullhorn text-3xl text-teal-500"></i>
         <h2 class="text-3xl font-semibold dark:text-white">Anuncios</h2>
