@@ -1,0 +1,411 @@
+<template>
+  <div
+    class="bg-gray-100 dark:bg-slate-600 px-1 sm:px-6 2xl:px-80 pb-10 transition duration-300 ease-in-out selection:bg-teal-500 selection:text-white"
+  >
+    <div class="flex justify-between items-center mb-8 px-3 pt-10">
+      <h2 class="text-3xl font-bold dark:text-white">Próximos eventos</h2>
+    </div>
+
+    <!-- Estado de carga -->
+    <div v-if="cargando" class="flex flex-col justify-center items-center h-64">
+      <div class="loader mb-4"></div>
+      <p class="text-gray-700 dark:text-gray-300">Cargando eventos...</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div v-else-if="error" class="text-red-500 text-center py-8">
+      {{ error }}
+    </div>
+
+    <!-- Contenido principal -->
+    <div v-else>
+      <div class="relative">
+        <swiper
+          :modules="modulos"
+          :slides-per-view="2"
+          :space-between="4"
+          :pagination="{ clickable: true }"
+          :navigation="false"
+          :grab-cursor="false"
+          class="mySwiper custom-swiper rounded-lg overflow-hidden"
+          :breakpoints="{
+            '420': {
+              slidesPerView: 2,
+              spaceBetween: 7,
+            },
+            '768': {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            '1020': {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
+          }"
+        >
+          <swiper-slide v-for="evento in eventos" :key="evento.fecha">
+            <div
+              class="p-[1px] rounded-lg mb-10 mx-auto group relative overflow-hidden"
+            >
+              <div
+                class="absolute inset-0 dark:bg-gradient-to-tr from-blue-500 to-teal-500 rounded-lg animate-gradient"
+              ></div>
+              <div
+                class="bg-white dark:bg-slate-600/85 rounded-lg shadow flex flex-col h-[340px] md:h-[330px] relative z-10"
+              >
+                <div class="flex-grow py-2 px-2 sm:px-6">
+                  <div class="flex items-center justify-center p-4">
+                    <div
+                      :class="[
+                        'relative text-3xl font-bold text-black border py-2 px-6 rounded-md shadow-md bg-white folded-corner',
+                        evento.infoIconoTexto === 'Canasta de amor'
+                          ? 'border-t-red-500'
+                          : '',
+                        evento.infoIconoTexto === 'Cena del Señor'
+                          ? 'border-t-red-700'
+                          : '',
+                        evento.infoIconoTexto === 'Reunión de damas'
+                          ? 'border-t-pink-500'
+                          : '',
+                        evento.infoIconoTexto === 'Domingo misionero'
+                          ? 'border-t-green-500'
+                          : '',
+                        evento.infoIconoTexto === 'Culto de oración'
+                          ? 'border-t-violet-500'
+                          : '',
+                        evento.infoIconoTexto !== 'Canasta de amor' &&
+                        evento.infoIconoTexto !== 'Cena del Señor' &&
+                        evento.infoIconoTexto !== 'Reunión de damas' &&
+                        evento.infoIconoTexto !== 'Domingo misionero' &&
+                        evento.infoIconoTexto !== 'Culto de oración'
+                          ? 'border-t-teal-500'
+                          : '',
+                        'border-t-4',
+                        'transition-transform duration-300 group-hover:scale-105',
+                      ]"
+                    >
+                      <div
+                        class="absolute top-1 left-3 w-1.5 h-1.5 bg-black rounded-full"
+                      ></div>
+                      <div
+                        class="absolute top-1 right-3 w-1.5 h-1.5 bg-black rounded-full"
+                      ></div>
+                      <div class="text-center">{{ evento.dia }}</div>
+                      <div class="text-sm text-gray-600 text-center">
+                        {{ evento.mes }}
+                      </div>
+                      <InfoIcono
+                        :show="evento.infoAdiccional"
+                        size="small"
+                        :texto="evento.infoIconoTexto"
+                      />
+                    </div>
+                  </div>
+                  <h3
+                    class="font-semibold mb-2 text-[14px] xl:text-xl flex items-center truncate dark:text-white"
+                  >
+                    {{ evento.titulo }}
+                    <svg
+                      v-if="evento.banner !== null"
+                      class="ml-2 w-4 h-4 text-gray-600"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                  </h3>
+                  <p
+                    class="text-sm text-gray-600 mb-2 flex items-center dark:text-white"
+                  >
+                    <i class="fas fa-clock mr-2"></i
+                    >{{ obtenerDiaSemana(evento.fecha) }},
+                    {{ formatTime(evento.hora) }}
+                  </p>
+                  <p
+                    class="text-[13px] sm:text-sm text-gray-600 dark:text-white mb-2 flex"
+                  >
+                    <i
+                      :class="{
+                        'fas fa-map-marker-alt': !isUrl(evento.lugar),
+                        'fas fa-link': isUrl(evento.lugar),
+                      }"
+                      class="mr-2 mt-1 flex-shrink-0"
+                    ></i>
+                    <span class="mr-[2px] sm:mr-[6px] break-all">{{
+                      evento.lugar
+                    }}</span>
+                  </p>
+                  <p
+                    class="text-sm font-semibold text-gray-600 mb-2 dark:text-white"
+                  >
+                    <i class="fas fa-calendar-plus mr-2"></i>
+                    {{
+                      evento.diasRestantes === 0
+                        ? "Hoy"
+                        : evento.diasRestantes === 1
+                        ? "1 día restante"
+                        : `${evento.diasRestantes} días restantes`
+                    }}
+                  </p>
+                </div>
+                <div class="mt-auto pb-3 px-2 sm:px-6">
+                  <button
+                    @click="abrirModal(evento)"
+                    class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition duration-300 dark:bg-teal-500 dark:hover:bg-teal-700 transform hover:-translate-y-1"
+                  >
+                    Detalles
+                  </button>
+                </div>
+              </div>
+            </div>
+          </swiper-slide>
+        </swiper>
+      </div>
+    </div>
+    <EventoModal
+      v-if="eventoSeleccionado"
+      :evento="eventoSeleccionado"
+      @cerrar="cerrarModal"
+    />
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from "vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import InfoIcono from "./InfoIcono.vue";
+import EventoModal from "./EventoModal.vue";
+import { fechas } from "../../lib/api";
+
+export default {
+  components: {
+    Swiper,
+    SwiperSlide,
+    InfoIcono,
+    EventoModal,
+  },
+  setup() {
+    const eventos = ref([]);
+    const eventoSeleccionado = ref(null);
+    const cargando = ref(true);
+    const error = ref(null);
+
+    const abrirModal = (evento) => {
+      eventoSeleccionado.value = evento;
+    };
+
+    const cerrarModal = () => {
+      eventoSeleccionado.value = null;
+    };
+
+    const obtenerDiaSemana = (fecha) => {
+      const dias = [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+      ];
+      return dias[fecha.getDay()];
+    };
+
+    const formatTime = (time) => {
+      if (!time) return "";
+      const [hours, minutes] = time.split(":");
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? "pm" : "am";
+      const formattedHour = hour % 12 || 12;
+      return `${formattedHour}:${minutes} ${ampm}`;
+    };
+
+    const isUrl = (str) => {
+      try {
+        new URL(str);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const generarServiciosDominicales = (inicio, fin) => {
+      const servicios = [];
+      let fecha = new Date(inicio);
+      fecha.setDate(fecha.getDate() + ((7 - fecha.getDay()) % 7));
+
+      while (fecha <= fin) {
+        const esPrimerDomingo = fecha.getDate() <= 7;
+        servicios.push({
+          fecha: new Date(fecha),
+          titulo: "Servicio dominical",
+          hora: "10:00", // Modificado para consistencia
+          lugar: "Salón Comunal Asovivir",
+          descripcion: esPrimerDomingo
+            ? "Cena del Señor"
+            : "Servicio dominical semanal.",
+          infoAdicional: true,
+          banner: null,
+          dia: fecha.getDate().toString().padStart(2, "0"),
+          mes: fecha.toLocaleString("es-CO", { month: "long" }),
+          diaSemana: "Domingo",
+        });
+        fecha.setDate(fecha.getDate() + 7);
+      }
+      return servicios;
+    };
+
+    const modificarServicioDominical = (fecha, modificaciones) => {
+      const index = eventos.value.findIndex(
+        (e) =>
+          e.fecha.getTime() === fecha.getTime() &&
+          e.titulo === "Servicio dominical"
+      );
+      if (index !== -1) {
+        eventos.value[index] = { ...eventos.value[index], ...modificaciones };
+      }
+    };
+
+    onMounted(async () => {
+      try {
+        cargando.value = true;
+
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        const finPeriodo = new Date(hoy);
+        finPeriodo.setDate(finPeriodo.getDate() + 27); //Cantidad dias en el calendario
+
+        // Primero generamos los servicios dominicales
+        const serviciosDominicales = generarServiciosDominicales(
+          hoy,
+          finPeriodo
+        );
+
+        // Asignamos inicialmente los servicios dominicales
+        eventos.value = serviciosDominicales;
+
+        try {
+          // Intentamos cargar los eventos de la API
+          const response = await fechas.getAll();
+          const datosAPI = response.data;
+
+          const eventosAPI = datosAPI.map((evento) => {
+            const fechaEvento = new Date(evento.fecha);
+            return {
+              ...evento,
+              fecha: fechaEvento,
+              dia: fechaEvento.getDate().toString().padStart(2, "0"),
+              mes: fechaEvento.toLocaleString("es-CO", { month: "long" }),
+              diaSemana: obtenerDiaSemana(fechaEvento),
+            };
+          });
+
+          // Combinamos los eventos de la API con los servicios dominicales
+          eventos.value = [...serviciosDominicales, ...eventosAPI]
+            .filter((evento) => {
+              return evento.fecha >= hoy && evento.fecha <= finPeriodo;
+            })
+            .sort((a, b) => a.fecha - b.fecha)
+            .reduce((acc, evento) => {
+              const index = acc.findIndex(
+                (e) => e.fecha.getTime() === evento.fecha.getTime()
+              );
+              if (index === -1) {
+                acc.push(evento);
+              } else if (
+                !acc[index].infoAdicional ||
+                evento.modificarServicioDominical
+              ) {
+                acc[index] = { ...acc[index], ...evento };
+              }
+              return acc;
+            }, []);
+        } catch (apiError) {
+          console.warn(
+            "No se pudieron cargar los eventos de la API, usando solo servicios dominicales:",
+            apiError
+          );
+          // Si la API falla, ya tenemos los servicios dominicales cargados
+        }
+
+        // Calculamos los días restantes para todos los eventos
+        eventos.value.forEach((evento) => {
+          evento.diasRestantes = Math.ceil(
+            (evento.fecha - hoy) / (1000 * 60 * 60 * 24)
+          );
+        });
+      } catch (err) {
+        console.error("Error al procesar los eventos:", err);
+        error.value =
+          "Ocurrió un error al procesar los eventos. Por favor, intente más tarde.";
+      } finally {
+        cargando.value = false;
+      }
+    });
+
+    return {
+      modulos: [Pagination, Navigation],
+      eventos,
+      eventoSeleccionado,
+      abrirModal,
+      cerrarModal,
+      cargando,
+      error,
+      obtenerDiaSemana,
+      modificarServicioDominical,
+      formatTime,
+      isUrl,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.loader {
+  width: 50px;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #25b09b;
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.folded-corner {
+  position: relative;
+}
+
+.folded-corner::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-radius: 0 0 5px 0;
+  border-width: 0 0 17px 17px;
+  border-color: transparent transparent #e0e0e0 transparent;
+  box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.1);
+}
+</style>
