@@ -179,131 +179,136 @@
         ]"
         id="navbar-sticky"
       >
-        <!-- Lista de enlaces de navegación -->
-        <ul
-          class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 nav-menu"
-        >
-          <!-- Inicio -->
-          <li>
-            <a
-              href="/#inicio"
-              @click="closeMenu"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+        <!-- Contenedor con borde normal en modo claro y animado en modo oscuro -->
+        <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none border border-gray-100 dark:border-0 dark:bg-gradient-to-r from-teal-500 to-blue-500 dark:animate-gradient md:border-0 md:p-0 md:bg-transparent md:dark:bg-transparent md:dark:bg-none md:dark:animate-none">
+          <div class="bg-gray-800 md:bg-transparent rounded-lg">
+            <!-- Lista de enlaces de navegación -->
+            <ul
+              class="flex flex-col p-4 md:p-0 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 nav-menu md:px-4 md:py-2"
             >
-              Inicio
-            </a>
-          </li>
-
-          <!-- Anuncios y eventos -->
-          <li>
-            <a
-              href="/#anuncios"
-              @click="closeMenu"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-            >
-              Anuncios y Eventos
-            </a>
-          </li>
-
-          <!-- Conócenos (versión móvil) -->
-          <li class="md:hidden">
-            <button
-              @click="toggleConocenos"
-              class="w-full text-left ease-in duration-150 flex justify-between items-center py-2 px-3 text-white rounded hover:bg-gray-700 dark:hover:text-white"
-            >
-              Conócenos
-              <svg
-                :class="{ 'rotate-180': conocenosVisible }"
-                class="w-4 h-4 ml-2 transition-transform duration-200"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-            <ul v-show="conocenosVisible" class="pl-4">
+              <!-- Inicio -->
               <li>
                 <a
-                  href="/#pastor"
+                  href="/#inicio"
                   @click="closeMenu"
-                  class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >
+                  Inicio
+                </a>
+              </li>
+
+              <!-- Anuncios y eventos -->
+              <li>
+                <a
+                  href="/#anuncios"
+                  @click="closeMenu"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >
+                  Anuncios y Eventos
+                </a>
+              </li>
+
+              <!-- Conócenos (versión móvil) -->
+              <li class="md:hidden">
+                <button
+                  @click="toggleConocenos"
+                  class="w-full text-left ease-in duration-150 flex justify-between items-center py-2 px-3 text-white rounded hover:bg-gray-700 dark:hover:text-white"
+                >
+                  Conócenos
+                  <svg
+                    :class="{ 'rotate-180': conocenosVisible }"
+                    class="w-4 h-4 ml-2 transition-transform duration-200"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                <ul v-show="conocenosVisible" class="pl-4">
+                  <li>
+                    <a
+                      href="/#pastor"
+                      @click="closeMenu"
+                      class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
+                    >
+                      Pastor
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/#servicio"
+                      @click="closeMenu"
+                      class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
+                    >
+                      Servicios
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/#ministerios"
+                      @click="closeMenu"
+                      class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
+                    >
+                      Ministerios
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- Enlaces para la versión de escritorio -->
+              <li class="hidden md:block">
+                <a
+                  href="/#pastor"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Pastor
                 </a>
               </li>
-              <li>
+              <li class="hidden md:block">
                 <a
                   href="/#servicio"
-                  @click="closeMenu"
-                  class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Servicios
                 </a>
               </li>
-              <li>
+              <li class="hidden md:block">
                 <a
                   href="/#ministerios"
-                  @click="closeMenu"
-                  class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Ministerios
                 </a>
               </li>
+
+              <!-- Confesión de fe -->
+              <li>
+                <a
+                  href="/confesion"
+                  @click="closeMenu"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >
+                  Confesión de fe
+                </a>
+              </li>
+
+              <!-- Preguntas frecuentes -->
+              <li>
+                <a
+                  href="/preguntas"
+                  @click="closeMenu"
+                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >
+                  Preguntas frecuentes
+                </a>
+              </li>
             </ul>
-          </li>
-
-          <!-- Enlaces para la versión de escritorio -->
-          <li class="hidden md:block">
-            <a
-              href="/#pastor"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-            >
-              Pastor
-            </a>
-          </li>
-          <li class="hidden md:block">
-            <a
-              href="/#servicio"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-            >
-              Servicios
-            </a>
-          </li>
-          <li class="hidden md:block">
-            <a
-              href="/#ministerios"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-            >
-              Ministerios
-            </a>
-          </li>
-
-          <!-- Confesión de fe -->
-          <li>
-            <a
-              href="/confesion"
-              @click="closeMenu"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-            >
-              Confesión de fe
-            </a>
-          </li>
-
-          <!-- Preguntas frecuentes -->
-          <li>
-            <a
-              href="/preguntas"
-              @click="closeMenu"
-              class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-            >
-              Preguntas frecuentes
-            </a>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -474,5 +479,22 @@ export default {
 <style scoped>
 .nav-menu a {
   transition: color 0.3s ease;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
 }
 </style>
