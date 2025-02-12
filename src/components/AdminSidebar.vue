@@ -157,8 +157,7 @@ export default {
   },
   methods: {
     handleLogout() {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      window.location.href = "/logout";
     },
     updateCurrentPath() {
       this.currentPath = window.location.pathname;
