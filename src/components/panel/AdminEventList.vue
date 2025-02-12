@@ -111,7 +111,7 @@ onMounted(() => {
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-0">
       <div>
         <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent">
-          Administración de Anuncios
+          Administrar Anuncios
         </h2>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona los anuncios y eventos especiales</p>
       </div>

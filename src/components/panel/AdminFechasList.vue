@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-0">
       <div>
         <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent">
-          Administración de Fechas
+          Administrar Fechas
         </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona las fechas importantes</p>
       </div>
@@ -18,8 +18,36 @@
       </button>
     </div>
 
+    <!-- Notificación de Error -->
+    <div
+      v-if="errorMessage"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+    >
+      <span class="block sm:inline">{{ errorMessage }}</span>
+      <span
+        class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
+        @click="errorMessage = ''"
+      >
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </span>
+    </div>
+
     <!-- Lista de Fechas -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <div v-if="isLoading" class="text-center py-4">Cargando fechas...</div>
+
+    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
       <!-- Vista de tabla para desktop -->
       <table
         class="hidden md:table min-w-full divide-y divide-gray-200 dark:divide-gray-900 dark:text-white"
@@ -216,32 +244,6 @@
           </ul>
         </div>
       </div>
-    </div>
-
-    <!-- Notificación de Error -->
-    <div
-      v-if="errorMessage"
-      class="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50 flex items-center shadow-lg"
-    >
-      <span>{{ errorMessage }}</span>
-      <button
-        @click="errorMessage = ''"
-        class="ml-4 text-red-700 hover:text-red-900"
-      >
-        <svg
-          class="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
     </div>
 
     <!-- Modal para Agregar/Editar -->
@@ -549,6 +551,7 @@ export default {
       activeCard: null,
       swipeX: 0,
       swipeStartX: 0,
+      isLoading: true,
     };
   },
   async created() {
@@ -557,11 +560,14 @@ export default {
   methods: {
     async loadFechas() {
       try {
+        this.isLoading = true;
         const response = await fechas.getAll();
         this.fechas = this.sortFechas(response.data);
       } catch (error) {
         console.error("Error al cargar fechas:", error);
         this.errorMessage = "Error al cargar las fechas";
+      } finally {
+        this.isLoading = false;
       }
     },
     sortFechas(fechas) {
