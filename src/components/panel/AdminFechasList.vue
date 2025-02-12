@@ -57,6 +57,11 @@
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
             >
+              #
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            >
               Fecha
             </th>
             <th
@@ -95,10 +100,13 @@
           class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-900"
         >
           <tr
-            v-for="fecha in fechas"
+            v-for="(fecha, index) in fechas"
             :key="fecha.id"
             class="hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
           >
+            <td class="px-6 py-4 whitespace-nowrap font-medium">
+              {{ index + 1 }}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               {{ formatDate(fecha.fecha) }}
             </td>
@@ -162,7 +170,7 @@
         >
           <ul class="divide-y-2 divide-gray-200 dark:divide-gray-900">
             <li
-              v-for="fecha in fechas"
+              v-for="(fecha, index) in fechas"
               :key="fecha.id"
               class="relative overflow-hidden touch-pan-y"
               @touchstart="handleTouchStart($event, fecha.id)"
@@ -187,9 +195,12 @@
                 <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-600/50 transition duration-150 ease-in-out">
                   <div class="flex flex-col space-y-2">
                     <div class="flex justify-between items-start">
-                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ fecha.titulo }}
-                      </h3>
+                      <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">#{{ index + 1 }}</span>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                          {{ fecha.titulo }}
+                        </h3>
+                      </div>
                       <div class="flex flex-col items-end text-sm">
                         <span class="text-gray-500 dark:text-gray-400">
                           {{ formatDate(fecha.fecha) }}
