@@ -2,8 +2,12 @@
   <div
     class="bg-gray-100 dark:bg-slate-600 px-1 sm:px-6 2xl:px-80 pb-10 transition duration-300 ease-in-out selection:bg-teal-500 selection:text-white"
   >
-    <div class="flex justify-between items-center mb-8 px-3 pt-10">
-      <h2 class="text-3xl font-bold dark:text-white">Próximos eventos</h2>
+    <div class="flex flex-col mb-8 px-3 pt-10">
+      <div class="flex items-center gap-3 mb-2">
+        <i class="fas fa-calendar-alt text-3xl text-teal-500"> </i>
+        <h2 class="text-3xl font-bold dark:text-white">Próximos eventos</h2>
+      </div>
+      <p class="text-gray-600 dark:text-gray-300 ml-1">Mantente al día con nuestras próximas actividades y servicios</p>
     </div>
 
     <!-- Estado de carga -->
@@ -45,13 +49,13 @@
         >
           <swiper-slide v-for="evento in eventos" :key="evento.fecha">
             <div
-              class="p-[1px] rounded-lg mb-10 mx-auto group relative overflow-hidden"
+              class="p-[1px] rounded-lg mb-10 mx-auto group relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               <div
-                class="absolute inset-0 dark:bg-gradient-to-tr from-blue-500 to-teal-500 rounded-lg animate-gradient"
+                class="absolute inset-0 dark:bg-gradient-to-tr from-blue-500 to-teal-500 rounded-lg animate-gradient opacity-80 group-hover:opacity-100 transition-opacity duration-300"
               ></div>
               <div
-                class="bg-white dark:bg-slate-600/85 rounded-lg shadow flex flex-col h-[340px] md:h-[330px] relative z-10"
+                class="bg-white dark:bg-slate-600/85 rounded-lg shadow flex flex-col h-[340px] md:h-[330px] relative z-10 backdrop-blur-sm"
               >
                 <div class="flex-grow py-2 px-2 sm:px-6">
                   <div class="flex items-center justify-center p-4">
@@ -157,9 +161,10 @@
                 <div class="mt-auto pb-3 px-2 sm:px-6">
                   <button
                     @click="abrirModal(evento)"
-                    class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition duration-300 dark:bg-teal-500 dark:hover:bg-teal-700 transform hover:-translate-y-1"
+                    class="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-all duration-300 dark:bg-teal-500 dark:hover:bg-teal-700 transform hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
-                    Detalles
+                    <span>Detalles</span>
+                    <i class="fas fa-arrow-right text-sm transition-transform group-hover:translate-x-1"></i>
                   </button>
                 </div>
               </div>
@@ -398,6 +403,12 @@ export default {
 
 .folded-corner {
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.folded-corner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .folded-corner::after {
@@ -412,5 +423,35 @@ export default {
   border-width: 0 0 17px 17px;
   border-color: transparent transparent #e0e0e0 transparent;
   box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+.custom-swiper {
+  padding: 20px 10px;
+}
+
+.swiper-slide {
+  transition: transform 0.3s ease;
+}
+
+.swiper-slide:hover {
+  transform: translateY(-5px);
 }
 </style>
