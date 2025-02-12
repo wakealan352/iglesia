@@ -180,13 +180,13 @@ onMounted(() => {
             <img
               :src="evento.image"
               :alt="evento.titulo"
-              class="w-full h-48 object-cover rounded-md"
+              class="w-full h-[200px] object-cover rounded-md"
             />
             <div
               class="absolute inset-0 bg-black bg-opacity-50 rounded-md flex flex-col justify-center p-4 text-white"
             >
-              <h3 class="text-xl font-bold mb-2">{{ evento.titulo }}</h3>
-              <p class="text-sm mb-4">{{ evento.descripcion }}</p>
+              <h3 class="sm:text-xl text-[16px] font-bold mb-1">{{ evento.titulo }}</h3>
+              <p class="text-sm mb-2">{{ evento.descripcion }}</p>
               <div v-if="evento.textoBoton || evento.linkBoton" class="text-sm">
                 <a
                   v-if="evento.linkBoton"
