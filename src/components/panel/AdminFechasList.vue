@@ -154,7 +154,7 @@
               </div>
               <div class="relative bg-white dark:bg-gray-700 transform transition-transform duration-200"
                    :style="{ transform: `translateX(${activeCard === fecha.id ? swipeX : 0}px)` }">
-                <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
+                <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-600/50 transition duration-150 ease-in-out">
                   <div class="flex flex-col space-y-2">
                     <div class="flex justify-between items-start">
                       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -184,9 +184,9 @@
                         {{ fecha.lugar }}
                       </div>
                     </div>
-                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-600">
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-600/80 group-hover:border-gray-200 dark:group-hover:border-gray-500">
                       <div class="flex items-center space-x-2">
-                        <span v-if="fecha.banner" title="Tiene banner" class="text-green-500">
+                        <span v-if="fecha.banner" title="Tiene banner" class="text-green-500 dark:text-green-400">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
@@ -195,10 +195,10 @@
                       </div>
                       <!-- Indicadores de deslizamiento -->
                       <div class="flex items-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" :class="activeCard === fecha.id && swipeX < 0 ? 'text-red-500' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" :class="activeCard === fecha.id && swipeX < 0 ? 'text-red-500' : 'text-gray-400 dark:text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" :class="activeCard === fecha.id && swipeX > 0 ? 'text-blue-500' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" :class="activeCard === fecha.id && swipeX > 0 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </div>
