@@ -73,10 +73,10 @@ defineExpose({ openModal, closeModal });
   <!-- Overlay del modal -->
   <div v-if="isOpen" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 flex items-center justify-center">
     <!-- Modal -->
-    <div class="relative bg-white/80 dark:bg-gray-800/90 backdrop-blur-md rounded-lg shadow-xl max-w-md w-full m-4 border border-white/20">
+    <div class="relative bg-white dark:bg-gray-800/90 backdrop-blur-md rounded-lg shadow-xl max-w-md w-full m-4 border border-white/20">
       <!-- Header con título y botón de cerrar -->
       <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Iniciar Sesión</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Iniciar Sesión</h2>
         <button 
           @click="closeModal"
           class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
