@@ -131,7 +131,7 @@ const handleSubmit = () => {
       ></div>
       <div
         v-if="showModal"
-        class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform border border-gray-200 dark:border-gray-700 animate__animated animate__slideInDown animate__faster"
+        class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform border border-gray-200 dark:border-gray-700 animate__animated animate__fadeInDown animate__faster"
       >
         <!-- Modal header -->
         <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-t-lg">
@@ -319,18 +319,19 @@ body.modal-open {
   animation-fill-mode: both;
 }
 
-.animate__slideInDown {
-  animation-name: slideInDown;
+.animate__fadeInDown {
+  animation-name: fadeInDown;
   animation-duration: 0.5s;
 }
 
-@keyframes slideInDown {
+@keyframes fadeInDown {
   from {
+    opacity: 0;
     transform: translate3d(0, -100%, 0);
-    visibility: visible;
   }
 
   to {
+    opacity: 1;
     transform: translate3d(0, 0, 0);
   }
 }

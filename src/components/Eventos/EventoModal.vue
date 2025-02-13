@@ -6,10 +6,8 @@
   >
     <div
       :class="[
-        'max-w-xl w-full relative p-[2px] dark:bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-xl animate-gradient animate__animated',
-        isClosing ? 'animate__slideOutUp' : 'animate__slideInDown'
+        'max-w-xl w-full relative p-[2px] dark:bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-xl animate-gradient animate__animated animate__fadeInDown'
       ]"
-      @animationend="onAnimationEnd"
     >
       <div class="bg-white dark:bg-slate-600/85 rounded-lg">
         <div
@@ -153,7 +151,6 @@ export default {
   data() {
     return {
       imagenAmpliada: false,
-      isClosing: false
     };
   },
   methods: {
@@ -179,13 +176,8 @@ export default {
       }
     },
     cerrar() {
-      this.isClosing = true;
-    },
-    onAnimationEnd() {
-      if (this.isClosing) {
-        document.body.classList.remove("modal-open");
-        this.$emit("cerrar");
-      }
+      document.body.classList.remove("modal-open");
+      this.$emit("cerrar");
     },
     cerrarSiEsFondo(event) {
       if (event.target === event.currentTarget) {
@@ -213,8 +205,7 @@ export default {
   overflow: hidden;
 }
 
-.animate__slideInDown,
-.animate__slideOutUp {
+.animate__fadeInDown {
   animation-duration: 0.5s !important;
   animation-fill-mode: forwards !important;
   animation-iteration-count: 1 !important;
