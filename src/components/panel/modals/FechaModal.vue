@@ -14,9 +14,8 @@
 
       <Transition
         enter-active-class="animate__animated animate__fadeInDown"
-        leave-active-class="animate__animated animate__fadeOutUp"
       >
-        <div v-show="showModal && !isClosing" class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform border border-gray-200 dark:border-gray-700">
+        <div v-show="showModal" class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform border border-gray-200 dark:border-gray-700">
           <!-- Modal header -->
           <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-t-lg">
             <div class="flex justify-between items-center">
@@ -301,12 +300,8 @@ export default {
       };
     },
     closeModal() {
-      this.isClosing = true;
-      setTimeout(() => {
-        this.$emit("close");
-        this.resetForm();
-        this.isClosing = false;
-      }, 500);
+      this.$emit("close");
+      this.resetForm();
     },
     getColorClass(value) {
       const option = this.iconOptions.find((opt) => opt.value === value);
@@ -339,10 +334,6 @@ export default {
 }
 
 .animate__fadeInDown {
-  animation-duration: 0.5s;
-}
-
-.animate__fadeOutUp {
   animation-duration: 0.5s;
 }
 </style> 
