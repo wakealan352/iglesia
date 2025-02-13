@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, defineEmits, defineProps, watch, onMounted, onUnmounted } from "vue";
+import 'animate.css';
 
 const props = defineProps({
   event: {
@@ -63,6 +64,18 @@ const imageOptions = [
   { value: "custom", label: "Imagen personalizada" },
 ];
 
+const showModal = ref(false);
+
+watch(() => props.isOpen, (newValue) => {
+  if (newValue) {
+    showModal.value = true;
+    document.body.classList.add('modal-open');
+  } else {
+    showModal.value = false;
+    document.body.classList.remove('modal-open');
+  }
+});
+
 watch(
   () => props.event,
   (newEvent) => {
@@ -98,14 +111,6 @@ watch([selectedImageOption, customImageUrl], () => {
   }
 });
 
-watch(() => props.isOpen, (isOpen) => {
-  if (isOpen) {
-    document.body.classList.add('modal-open');
-  } else {
-    document.body.classList.remove('modal-open');
-  }
-});
-
 onUnmounted(() => {
   document.body.classList.remove('modal-open');
 });
@@ -125,7 +130,8 @@ const handleSubmit = () => {
         class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
       ></div>
       <div
-        class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform transition-all border border-gray-200 dark:border-gray-700"
+        v-if="showModal"
+        class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform border border-gray-200 dark:border-gray-700 animate__animated animate__slideInDown animate__faster"
       >
         <!-- Modal header -->
         <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-t-lg">
@@ -309,19 +315,29 @@ body.modal-open {
   overflow: hidden;
 }
 
+.animate__animated {
+  animation-fill-mode: both;
+}
+
+.animate__slideInDown {
+  animation-name: slideInDown;
+  animation-duration: 0.5s;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translate3d(0, -100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @supports (-webkit-touch-callout: none) {
   .min-h-screen {
     min-height: -webkit-fill-available;
   }
-}
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-}
-
-* {
-  z-index: auto;
 }
 </style> 
