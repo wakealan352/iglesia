@@ -1,7 +1,7 @@
 <template>
   <!-- Barra de navegación principal -->
   <nav
-    class="bg-gray-800 fixed w-full z-30 top-0 start-0 border-b border-gray-600 navbar selection:bg-teal-500 selection:text-white"
+    class="bg-gray-800 fixed w-full z-50 top-0 start-0 border-b border-gray-600 navbar selection:bg-teal-500 selection:text-white"
     style="list-style-type: none"
   >
     <!-- Contenedor principal de la barra de navegación -->
@@ -30,8 +30,80 @@
         >
       </a>
 
-      <!-- Contenedor de botones (modo oscuro y hamburguesa) -->
-      <div class="flex md:order-2 space-x-2 rtl:space-x-reverse">
+      <!-- Menú de navegación (visible solo en desktop) -->
+      <div class="hidden md:flex items-center justify-between flex-grow">
+        <div class="relative p-[2px] rounded-lg mx-auto">
+          <div class="bg-gray-800 md:bg-transparent rounded-lg">
+            <ul class="flex font-medium space-x-8 rtl:space-x-reverse nav-menu px-4 py-2">
+              <li>
+                <a
+                  href="/#inicio"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Inicio
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/#anuncios"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Anuncios y Eventos
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/#pastor"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Pastor
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/#servicio"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Servicios
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/#ministerios"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Ministerios
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/confesion"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Confesión de fe
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/preguntas"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Preguntas frecuentes
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenedor de botones -->
+      <div class="flex space-x-2 rtl:space-x-reverse items-center">
         <!-- Botón de login/admin -->
         <div class="relative">
           <button
@@ -104,215 +176,103 @@
           </svg>
         </button>
 
-        <!-- Botón de hamburguesa para móviles -->
+        <!-- Botón de hamburguesa (visible solo en móvil) -->
         <button
-          @click.stop="toggleMenu"
-          type="button"
-          ref="hamburgerButton"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600 relative hamburger-button"
-          aria-controls="navbar-sticky"
-          :aria-expanded="menuVisible"
-          id="boton-prueba"
+          @click="toggleMenu"
+          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-700 flex md:hidden items-center justify-center"
         >
-          <span class="sr-only">{{
-            menuVisible ? "Cerrar menu principal" : "Abrir menu principal"
-          }}</span>
-
-          <!-- Contenedor para los iconos con posición absoluta -->
-          <div class="relative w-5 h-5">
-            <!-- Ícono de hamburguesa -->
-            <svg
-              class="w-5 h-5 absolute hamburger-icon text-teal-400"
-              :class="
-                menuVisible
-                  ? 'opacity-0 rotate-90 scale-0'
-                  : 'opacity-100 rotate-0 scale-100'
-              "
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
-
-            <!-- Ícono de X -->
-            <svg
-              class="w-5 h-5 absolute close-icon text-teal-400"
-              :class="
-                menuVisible
-                  ? 'opacity-100 rotate-0 scale-100'
-                  : 'opacity-0 rotate-90 scale-0'
-              "
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </div>
+          <svg
+            class="w-6 h-6 text-teal-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16m-7 6h7"
+            ></path>
+          </svg>
         </button>
-      </div>
-
-      <!-- Menú de navegación -->
-      <div
-        ref="navbarSticky"
-        :class="[
-          'items-center justify-between w-full md:flex md:w-auto md:order-1',
-          'absolute md:static top-full left-0 right-0',
-          'pb-6 md:pb-0 p-4 sm:p-0',
-          'backdrop-filter backdrop-blur-lg bg-gray-800 bg-opacity-100 sm:bg-transparent',
-          { hidden: !menuVisible },
-          { 'block animate__animated animate__slideInDown': menuVisible },
-        ]"
-        id="navbar-sticky"
-      >
-        <!-- Contenedor con borde normal en modo claro y animado en modo oscuro -->
-        <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none border border-gray-100 dark:border-0 dark:bg-gradient-to-r from-teal-500 to-blue-500 dark:animate-gradient md:border-0 md:p-0 md:bg-transparent md:dark:bg-transparent md:dark:bg-none md:dark:animate-none">
-          <div class="bg-gray-800 md:bg-transparent rounded-lg">
-            <!-- Lista de enlaces de navegación -->
-            <ul
-              class="flex flex-col p-4 md:p-0 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 nav-menu md:px-4 md:py-2"
-            >
-              <!-- Inicio -->
-              <li>
-                <a
-                  href="/#inicio"
-                  @click="closeMenu"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Inicio
-                </a>
-              </li>
-
-              <!-- Anuncios y eventos -->
-              <li>
-                <a
-                  href="/#anuncios"
-                  @click="closeMenu"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Anuncios y Eventos
-                </a>
-              </li>
-
-              <!-- Conócenos (versión móvil) -->
-              <li class="md:hidden">
-                <button
-                  @click="toggleConocenos"
-                  class="w-full text-left ease-in duration-150 flex justify-between items-center py-2 px-3 text-white rounded hover:bg-gray-700 dark:hover:text-white"
-                >
-                  Conócenos
-                  <svg
-                    :class="{ 'rotate-180': conocenosVisible }"
-                    class="w-4 h-4 ml-2 transition-transform duration-200"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-                <ul v-show="conocenosVisible" class="pl-4">
-                  <li>
-                    <a
-                      href="/#pastor"
-                      @click="closeMenu"
-                      class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
-                    >
-                      Pastor
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/#servicio"
-                      @click="closeMenu"
-                      class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
-                    >
-                      Servicios
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/#ministerios"
-                      @click="closeMenu"
-                      class="block py-2 px-3 text-white hover:bg-gray-700 dark:hover:text-white"
-                    >
-                      Ministerios
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
-              <!-- Enlaces para la versión de escritorio -->
-              <li class="hidden md:block">
-                <a
-                  href="/#pastor"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Pastor
-                </a>
-              </li>
-              <li class="hidden md:block">
-                <a
-                  href="/#servicio"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Servicios
-                </a>
-              </li>
-              <li class="hidden md:block">
-                <a
-                  href="/#ministerios"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Ministerios
-                </a>
-              </li>
-
-              <!-- Confesión de fe -->
-              <li>
-                <a
-                  href="/confesion"
-                  @click="closeMenu"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Confesión de fe
-                </a>
-              </li>
-
-              <!-- Preguntas frecuentes -->
-              <li>
-                <a
-                  href="/preguntas"
-                  @click="closeMenu"
-                  class="ease-in duration-150 block py-2 px-3 text-white rounded md:hover:bg-transparent md:hover:text-teal-400 md:p-0 md:dark:hover:text-teal-400 hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Preguntas frecuentes
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
   </nav>
+
+  <!-- Menú móvil -->
+  <div
+    v-show="isMenuOpen"
+    class="fixed top-[72px] left-0 right-0 bg-gray-800 shadow-lg z-40 animate__animated md:hidden"
+    :class="{ 'animate__slideInDown': isMenuOpen }"
+  >
+    <div class="container mx-auto px-4 py-4">
+      <ul class="space-y-4">
+        <li>
+          <a
+            href="/#inicio"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Inicio
+          </a>
+        </li>
+        <li>
+          <a
+            href="/#anuncios"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Anuncios y Eventos
+          </a>
+        </li>
+        <li>
+          <a
+            href="/#pastor"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Pastor
+          </a>
+        </li>
+        <li>
+          <a
+            href="/#servicio"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Servicios
+          </a>
+        </li>
+        <li>
+          <a
+            href="/#ministerios"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Ministerios
+          </a>
+        </li>
+        <li>
+          <a
+            href="/confesion"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Confesión de fe
+          </a>
+        </li>
+        <li>
+          <a
+            href="/preguntas"
+            @click="closeMenu"
+            class="block text-white hover:text-teal-400 transition-colors duration-300"
+          >
+            Preguntas frecuentes
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   <!-- Admin Sidebar -->
   <AdminSidebar :isOpen="adminMenuVisible" @close="closeAdminMenu" />
@@ -329,6 +289,7 @@ import BarraProgreso from "./BarraProgreso.vue";
 import AdminSidebar from "./AdminSidebar.vue";
 import LoginForm from "./panel/LoginForm.vue";
 import { checkAuth } from "../middleware/auth";
+import 'animate.css';
 
 export default {
   components: {
@@ -339,18 +300,25 @@ export default {
   name: "MenuInicio",
   data() {
     return {
-      menuVisible: false,
-      conocenosVisible: false,
       adminMenuVisible: false,
       isAuthenticated: false,
       activeSection: '',
       currentPath: '',
+      isMenuOpen: false,
     };
   },
   methods: {
     toggleMenu() {
-      this.menuVisible = !this.menuVisible;
-      document.body.classList.toggle("overflow-hidden", this.menuVisible);
+      this.isMenuOpen = !this.isMenuOpen;
+      if (this.isMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    },
+    closeMenu() {
+      this.isMenuOpen = false;
+      document.body.style.overflow = '';
     },
     toggleDarkMode() {
       const isDarkMode = !document.documentElement.classList.contains("dark");
@@ -365,10 +333,6 @@ export default {
         document.documentElement.classList.remove("dark");
       }
     },
-    closeMenu() {
-      this.menuVisible = false;
-      document.body.classList.remove("overflow-hidden");
-    },
     toggleAdminMenu() {
       this.adminMenuVisible = !this.adminMenuVisible;
     },
@@ -380,30 +344,15 @@ export default {
       window.location.href = "/login";
     },
     handleDocumentClick(event) {
-      const menu = this.$refs.navbarSticky;
-      const hamburgerButton = this.$refs.hamburgerButton;
-      const adminMenu = this.$el.querySelector(".relative"); // Para el menú de admin
-
-      if (
-        menu &&
-        !menu.contains(event.target) &&
-        !hamburgerButton.contains(event.target)
-      ) {
-        this.closeMenu();
-      }
-
+      const adminMenu = this.$el.querySelector(".relative");
       if (adminMenu && !adminMenu.contains(event.target)) {
         this.closeAdminMenu();
       }
-    },
-    toggleConocenos() {
-      this.conocenosVisible = !this.conocenosVisible;
     },
     checkAuthStatus() {
       this.isAuthenticated = checkAuth();
     },
     handleScroll() {
-      // Si estamos en la página principal
       if (this.currentPath === '/') {
         const sections = ['inicio', 'anuncios', 'pastor', 'servicio', 'ministerios'];
         const navLinks = document.querySelectorAll('.nav-menu a[href^="/#"]');
@@ -435,16 +384,14 @@ export default {
       }
     },
     updateActiveLink() {
-      // Obtener todos los enlaces del menú
       const allLinks = document.querySelectorAll('.nav-menu a');
       
       allLinks.forEach(link => {
         const href = link.getAttribute('href');
-        // Si el href coincide con la ruta actual o si estamos en la página principal y el enlace es "/"
         if (href === this.currentPath || (this.currentPath === '/' && href === '/')) {
           link.classList.add('text-teal-400');
           link.classList.remove('text-white');
-        } else if (!href.startsWith('/#')) { // Solo resetear los enlaces que no son anclas
+        } else if (!href.startsWith('/#')) {
           link.classList.remove('text-teal-400');
           link.classList.add('text-white');
         }
@@ -466,10 +413,8 @@ export default {
     this.checkAuthStatus();
     document.addEventListener("click", this.handleDocumentClick);
     
-    // Actualizar la ruta actual
     this.updateCurrentPath();
     
-    // Solo agregar el evento de scroll si estamos en la página principal
     if (this.currentPath === '/') {
       window.addEventListener('scroll', this.handleScroll);
       this.$nextTick(() => {
@@ -477,13 +422,13 @@ export default {
       });
     }
 
-    // Escuchar cambios en la ruta
     window.addEventListener('popstate', this.updateCurrentPath);
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleDocumentClick);
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('popstate', this.updateCurrentPath);
+    document.body.style.overflow = '';
   },
 };
 </script>
@@ -503,11 +448,6 @@ export default {
   100% {
     background-position: 0% 50%;
   }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 3s ease infinite;
 }
 
 /* Animación para el botón de modo oscuro */
@@ -536,33 +476,17 @@ export default {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-/* Animaciones para el botón hamburguesa */
-.hamburger-button {
-  transition: background-color 0.3s ease;
+/* Aseguramos que el contenido se empuje hacia abajo por la altura de la barra de navegación fija */
+:root {
+  --nav-height: 72px;
 }
 
-.hamburger-button:hover svg {
-  color: #2dd4bf; /* Color teal-400 */
+body {
+  padding-top: var(--nav-height);
 }
 
-.hamburger-icon,
-.close-icon {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-}
-
-.hamburger-icon.opacity-0,
-.close-icon.opacity-0 {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hamburger-icon.rotate-90,
-.close-icon.rotate-90 {
-  transform: rotate(90deg) scale(0);
-}
-
-.hamburger-icon.rotate-0,
-.close-icon.rotate-0 {
-  transform: rotate(0) scale(1);
+/* Ajustes para la animación del menú móvil */
+.animate__animated {
+  --animate-duration: 0.3s;
 }
 </style>
