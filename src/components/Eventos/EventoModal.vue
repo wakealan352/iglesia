@@ -141,6 +141,7 @@
 </template>
 
 <script>
+import 'animate.css';
 export default {
   props: {
     evento: {
@@ -207,7 +208,12 @@ export default {
 
 .animate__fadeInDown {
   animation-duration: 0.5s !important;
-  animation-fill-mode: forwards !important;
+  animation-fill-mode: both !important;
   animation-iteration-count: 1 !important;
+}
+
+/* Aseguramos que el fondo tenga su propia transición suave */
+.backdrop-blur-sm {
+  transition: all 0.3s ease-in-out;
 }
 </style>
