@@ -63,14 +63,11 @@ const imageOptions = [
   { value: "custom", label: "Imagen personalizada" },
 ];
 
-// Modify the watch to update all form data
 watch(
   () => props.event,
   (newEvent) => {
-    // Update all form data fields
     formData.value = { ...newEvent };
 
-    // Handle image selection
     if (newEvent.image) {
       const predefinedImage = imageOptions.find(
         (option) => option.url === newEvent.image
@@ -90,7 +87,6 @@ watch(
   { immediate: true, deep: true }
 );
 
-// Update formData.image when selection changes
 watch([selectedImageOption, customImageUrl], () => {
   if (selectedImageOption.value === "custom") {
     formData.value.image = customImageUrl.value || defaultImageUrl;
@@ -102,7 +98,6 @@ watch([selectedImageOption, customImageUrl], () => {
   }
 });
 
-// Add body class when modal is open
 watch(() => props.isOpen, (isOpen) => {
   if (isOpen) {
     document.body.classList.add('modal-open');
@@ -111,7 +106,6 @@ watch(() => props.isOpen, (isOpen) => {
   }
 });
 
-// Clean up on component unmount
 onUnmounted(() => {
   document.body.classList.remove('modal-open');
 });
@@ -321,15 +315,13 @@ body.modal-open {
   }
 }
 
-/* Asegurar que el modal esté siempre por encima */
 .modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 99999;
 }
 
-/* Prevenir que otros elementos se superpongan */
 * {
   z-index: auto;
 }
-</style>
+</style> 

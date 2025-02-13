@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { eventos } from "../../lib/api.ts";
-import EventForm from "./EventForm.vue";
+import EventoModal from "./modals/EventoModal.vue";
 
 const eventList = ref([]);
 const error = ref("");
@@ -152,7 +152,7 @@ onMounted(() => {
       </span>
     </div>
 
-    <EventForm
+    <EventoModal
       :event="editingEvent || {}"
       :isEdit="formMode === 'edit'"
       :isOpen="formMode !== 'closed'"
