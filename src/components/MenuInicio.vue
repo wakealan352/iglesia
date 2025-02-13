@@ -176,7 +176,7 @@
           'pb-6 md:pb-0 p-4 sm:p-0',
           'backdrop-filter backdrop-blur-lg bg-gray-800 bg-opacity-100 sm:bg-transparent',
           { hidden: !menuVisible },
-          { 'block animate__animated animate__fadeInDown': menuVisible },
+          { 'block animate__animated animate__slideInDown': menuVisible },
         ]"
         id="navbar-sticky"
       >
