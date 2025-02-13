@@ -13,8 +13,8 @@
       </Transition>
 
       <Transition
-        enter-active-class="animate__animated animate__slideInDown"
-        leave-active-class="animate__animated animate__slideOutUp"
+        enter-active-class="animate__animated animate__fadeInDown"
+        leave-active-class="animate__animated animate__fadeOutUp"
       >
         <div v-show="showModal && !isClosing" class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl shadow-xl transform border border-gray-200 dark:border-gray-700">
           <!-- Modal header -->
@@ -338,11 +338,11 @@ export default {
   z-index: 10;
 }
 
-.animate__slideInDown {
+.animate__fadeInDown {
   animation-duration: 0.5s;
 }
 
-.animate__slideOutUp {
+.animate__fadeOutUp {
   animation-duration: 0.5s;
 }
 </style> 
