@@ -31,9 +31,9 @@
       </a>
 
       <!-- Contenedor de botones (modo oscuro y hamburguesa) -->
-      <div class="flex md:order-2 md:space-x-0 rtl:space-x-reverse">
+      <div class="flex md:order-2 space-x-2 rtl:space-x-reverse">
         <!-- Botón de login/admin -->
-        <div class="relative mr-2">
+        <div class="relative">
           <button
             v-if="!isAuthenticated"
             @click="openLoginModal"
@@ -78,7 +78,7 @@
         <!-- Botón de modo oscuro -->
         <button
           @click="toggleDarkMode"
-          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700 float-right dark-mode-button"
+          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center dark-mode-button"
         >
           <!-- Ícono para modo claro -->
           <svg
@@ -109,7 +109,7 @@
           @click.stop="toggleMenu"
           type="button"
           ref="hamburgerButton"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600 relative"
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600 relative hamburger-button"
           aria-controls="navbar-sticky"
           :aria-expanded="menuVisible"
           id="boton-prueba"
@@ -122,7 +122,7 @@
           <div class="relative w-5 h-5">
             <!-- Ícono de hamburguesa -->
             <svg
-              class="w-5 h-5 absolute transition-all duration-300 ease-in-out text-teal-500"
+              class="w-5 h-5 absolute hamburger-icon text-teal-400"
               :class="
                 menuVisible
                   ? 'opacity-0 rotate-90 scale-0'
@@ -144,7 +144,7 @@
 
             <!-- Ícono de X -->
             <svg
-              class="w-5 h-5 absolute transition-all duration-300 ease-in-out text-teal-500"
+              class="w-5 h-5 absolute close-icon text-teal-400"
               :class="
                 menuVisible
                   ? 'opacity-100 rotate-0 scale-100'
@@ -533,5 +533,35 @@ export default {
 
 :root * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Animaciones para el botón hamburguesa */
+.hamburger-button {
+  transition: background-color 0.3s ease;
+}
+
+.hamburger-button:hover svg {
+  color: #2dd4bf; /* Color teal-400 */
+}
+
+.hamburger-icon,
+.close-icon {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.hamburger-icon.opacity-0,
+.close-icon.opacity-0 {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hamburger-icon.rotate-90,
+.close-icon.rotate-90 {
+  transform: rotate(90deg) scale(0);
+}
+
+.hamburger-icon.rotate-0,
+.close-icon.rotate-0 {
+  transform: rotate(0) scale(1);
 }
 </style>
