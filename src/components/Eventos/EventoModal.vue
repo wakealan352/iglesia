@@ -5,7 +5,11 @@
     class="fixed inset-0 backdrop-blur-sm bg-gray-900/50 flex items-center justify-center z-50"
   >
     <div
-      class="max-w-xl w-full relative p-[2px] dark:bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-xl animate-gradient"
+      :class="[
+        'max-w-xl w-full relative p-[2px] dark:bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-xl animate-gradient animate__animated',
+        isClosing ? 'animate__slideOutUp' : 'animate__slideInDown'
+      ]"
+      @animationend="onAnimationEnd"
     >
       <div class="bg-white dark:bg-slate-600/85 rounded-lg">
         <div
@@ -149,6 +153,7 @@ export default {
   data() {
     return {
       imagenAmpliada: false,
+      isClosing: false
     };
   },
   methods: {
@@ -174,8 +179,13 @@ export default {
       }
     },
     cerrar() {
-      document.body.classList.remove("modal-open");
-      this.$emit("cerrar");
+      this.isClosing = true;
+    },
+    onAnimationEnd() {
+      if (this.isClosing) {
+        document.body.classList.remove("modal-open");
+        this.$emit("cerrar");
+      }
     },
     cerrarSiEsFondo(event) {
       if (event.target === event.currentTarget) {
@@ -201,5 +211,12 @@ export default {
 <style>
 .modal-open {
   overflow: hidden;
+}
+
+.animate__slideInDown,
+.animate__slideOutUp {
+  animation-duration: 0.5s !important;
+  animation-fill-mode: forwards !important;
+  animation-iteration-count: 1 !important;
 }
 </style>
