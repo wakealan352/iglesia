@@ -11,7 +11,7 @@
       </h1>
 
       <!-- Carrusel para pantallas pequeñas -->
-      <div class="md:hidden">
+      <div class="md:hidden mb-4 ">
         <swiper
           :slides-per-view="1"
           :space-between="10"
@@ -163,6 +163,6 @@ export default {
 }
 
 :deep(.swiper) {
-  padding: 10px;
+  padding: 2px;
 }
 </style>
