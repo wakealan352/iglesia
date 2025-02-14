@@ -222,7 +222,7 @@
     class="fixed top-[72px] left-0 right-0 z-40 animate__animated md:hidden p-4 bg-gray-800"
     :class="{ 'animate__slideInDown': isMenuOpen }"
   >
-    <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gradient-to-r from-teal-500 to-blue-500 animate-gradient">
+    <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gray-100 dark:bg-gradient-to-r dark:from-teal-500 dark:to-blue-500 dark:animate-gradient">
       <div class="bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-lg">
         <div class="container mx-auto px-4 py-4">
           <ul class="space-y-4 nav-menu">
