@@ -35,17 +35,19 @@
 
       <!-- Grid para pantallas medianas y grandes -->
       <div
-        class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-8"
+        class="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-8"
       >
-        <div v-for="(column, colIndex) in imageColumns" :key="colIndex">
-          <div v-for="(image, imgIndex) in column" :key="imgIndex" class="relative mb-4">
-            <img
-              :src="image.src"
-              :alt="image.alt"
-              class="w-full aspect-[4/3] object-cover shadow-lg rounded-lg transition-all duration-300 hover:scale-[1.02]"
-            />
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 rounded-lg"></div>
-          </div>
+        <div
+          v-for="(image, index) in images"
+          :key="index"
+          class="relative mb-4"
+        >
+          <img
+            :src="image.src"
+            :alt="image.alt"
+            class="w-full aspect-[4/3] object-cover shadow-lg rounded-lg transition-all duration-300 hover:scale-[1.02]"
+          />
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 rounded-lg"></div>
         </div>
       </div>
 
