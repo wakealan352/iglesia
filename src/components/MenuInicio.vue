@@ -179,10 +179,12 @@
         <!-- Botón de hamburguesa (visible solo en móvil) -->
         <button
           @click="toggleMenu"
-          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-700 flex md:hidden items-center justify-center"
+          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-700 flex md:hidden items-center justify-center relative group"
         >
+          <!-- Icono de menú -->
           <svg
-            class="w-6 h-6 text-teal-400"
+            class="w-6 h-6 text-teal-400 transition-transform duration-300 ease-in-out"
+            :class="{ 'scale-0 absolute': isMenuOpen }"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -191,7 +193,22 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16m-7 6h7"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+          <!-- Icono de cerrar -->
+          <svg
+            class="w-6 h-6 text-teal-400 transition-transform duration-300 ease-in-out absolute"
+            :class="{ 'scale-100': isMenuOpen, 'scale-0': !isMenuOpen }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
             ></path>
           </svg>
         </button>
@@ -202,75 +219,25 @@
   <!-- Menú móvil -->
   <div
     v-show="isMenuOpen"
-    class="fixed top-[72px] left-0 right-0 bg-gray-800 shadow-lg z-40 animate__animated md:hidden"
+    class="fixed top-[72px] left-0 right-0 z-40 animate__animated md:hidden p-4 bg-gray-800"
     :class="{ 'animate__slideInDown': isMenuOpen }"
   >
-    <div class="container mx-auto px-4 py-4">
-      <ul class="space-y-4">
-        <li>
-          <a
-            href="/#inicio"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Inicio
-          </a>
-        </li>
-        <li>
-          <a
-            href="/#anuncios"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Anuncios y Eventos
-          </a>
-        </li>
-        <li>
-          <a
-            href="/#pastor"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Pastor
-          </a>
-        </li>
-        <li>
-          <a
-            href="/#servicio"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Servicios
-          </a>
-        </li>
-        <li>
-          <a
-            href="/#ministerios"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Ministerios
-          </a>
-        </li>
-        <li>
-          <a
-            href="/confesion"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Confesión de fe
-          </a>
-        </li>
-        <li>
-          <a
-            href="/preguntas"
-            @click="closeMenu"
-            class="block text-white hover:text-teal-400 transition-colors duration-300"
-          >
-            Preguntas frecuentes
-          </a>
-        </li>
-      </ul>
+    <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gradient-to-r from-teal-500 to-blue-500 animate-gradient">
+      <div class="bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-lg">
+        <div class="container mx-auto px-4 py-4">
+          <ul class="space-y-4 nav-menu">
+            <li v-for="item in menuItems" :key="item.href">
+              <a
+                :href="item.href"
+                @click="closeMenu"
+                class="block text-white hover:text-teal-400 transition-colors duration-300"
+              >
+                {{ item.text }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -305,6 +272,15 @@ export default {
       activeSection: '',
       currentPath: '',
       isMenuOpen: false,
+      menuItems: [
+        { href: '/#inicio', text: 'Inicio' },
+        { href: '/#anuncios', text: 'Anuncios y Eventos' },
+        { href: '/#pastor', text: 'Pastor' },
+        { href: '/#servicio', text: 'Servicios' },
+        { href: '/#ministerios', text: 'Ministerios' },
+        { href: '/confesion', text: 'Confesión de fe' },
+        { href: '/preguntas', text: 'Preguntas frecuentes' }
+      ]
     };
   },
   methods: {
@@ -319,6 +295,12 @@ export default {
     closeMenu() {
       this.isMenuOpen = false;
       document.body.style.overflow = '';
+      this.$nextTick(() => {
+        if (this.currentPath === '/') {
+          this.handleScroll();
+        }
+        this.updateActiveLink();
+      });
     },
     toggleDarkMode() {
       const isDarkMode = !document.documentElement.classList.contains("dark");
@@ -488,5 +470,23 @@ body {
 /* Ajustes para la animación del menú móvil */
 .animate__animated {
   --animate-duration: 0.3s;
+}
+
+/* Animación del gradiente */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.dark .dark\:animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 6s ease infinite;
 }
 </style>
