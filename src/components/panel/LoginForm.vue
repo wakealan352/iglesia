@@ -9,8 +9,53 @@ const isLoading = ref(false);
 const isSuccess = ref(false);
 const progress = ref(0);
 const isOpen = ref(false);
+const intentosFallidos = ref(0);
+const bloqueado = ref(false);
+const tiempoRestante = ref(0);
+const bloqueosPrevios = ref(0);
+let temporizador: number | null = null;
 
 const emit = defineEmits(['login-success', 'close']);
+
+const calcularTiempoBloqueo = (): number => {
+  // Tiempo base de 30 segundos
+  const tiempoBase = 30;
+  // Cada bloqueo previo duplica el tiempo
+  return tiempoBase * Math.pow(2, bloqueosPrevios.value);
+};
+
+const sanitizarEntrada = (texto: string): string => {
+  // Eliminar espacios en blanco al inicio y final
+  return texto.trim()
+    // Escapar caracteres especiales HTML
+    .replace(/[&<>"']/g, (match) => {
+      const escape: { [key: string]: string } = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return escape[match];
+    })
+    // Prevenir inyección de SQL básica
+    .replace(/[;{}()\\]/g, '');
+};
+
+const iniciarBloqueo = () => {
+  bloqueado.value = true;
+  bloqueosPrevios.value++;
+  tiempoRestante.value = calcularTiempoBloqueo();
+  
+  temporizador = setInterval(() => {
+    tiempoRestante.value--;
+    if (tiempoRestante.value <= 0) {
+      if (temporizador) clearInterval(temporizador);
+      bloqueado.value = false;
+      intentosFallidos.value = 0;
+    }
+  }, 1000);
+};
 
 const openModal = () => {
   isOpen.value = true;
@@ -18,27 +63,45 @@ const openModal = () => {
 
 const closeModal = () => {
   isOpen.value = false;
-  // Limpiar el formulario
+  // Limpiar el formulario y estado
   username.value = "";
   password.value = "";
   error.value = "";
   isSuccess.value = false;
   progress.value = 0;
+  intentosFallidos.value = 0;
+  bloqueado.value = false;
+  // No reiniciamos bloqueosPrevios para mantener el historial
+  if (temporizador) clearInterval(temporizador);
   emit('close');
 };
 
 const handleSubmit = async () => {
+  if (bloqueado.value) {
+    const minutos = Math.floor(tiempoRestante.value / 60);
+    const segundos = tiempoRestante.value % 60;
+    const tiempoFormateado = minutos > 0 
+      ? `${minutos} minutos y ${segundos} segundos`
+      : `${segundos} segundos`;
+    error.value = `Formulario bloqueado. Espere ${tiempoFormateado}.`;
+    return;
+  }
+
   try {
     isLoading.value = true;
     error.value = "";
     progress.value = 0;
 
+    const usuarioSanitizado = sanitizarEntrada(username.value);
+    const passwordSanitizada = sanitizarEntrada(password.value);
+
     const response = await auth.login({
-      username: username.value,
-      password: password.value,
+      username: usuarioSanitizado,
+      password: passwordSanitizada,
     });
 
     isSuccess.value = true;
+    intentosFallidos.value = 0;
 
     const animationDuration = 1000;
     const steps = 100;
@@ -52,13 +115,26 @@ const handleSubmit = async () => {
 
     localStorage.setItem("token", response.data.token);
 
-    // En lugar de redirigir, emitimos un evento de éxito
     setTimeout(() => {
       emit('login-success', response.data);
       closeModal();
     }, 1000);
   } catch (err: any) {
-    error.value = err.response?.data?.mensaje || "Error al iniciar sesión";
+    intentosFallidos.value++;
+    
+    if (intentosFallidos.value >= 3) {
+      const tiempoProximo = calcularTiempoBloqueo();
+      const minutos = Math.floor(tiempoProximo / 60);
+      const segundos = tiempoProximo % 60;
+      const tiempoFormateado = minutos > 0 
+        ? `${minutos} minutos y ${segundos} segundos`
+        : `${segundos} segundos`;
+      error.value = `Demasiados intentos fallidos. El formulario se bloqueará por ${tiempoFormateado}.`;
+      iniciarBloqueo();
+    } else {
+      error.value = err.response?.data?.mensaje || "Error al iniciar sesión";
+    }
+    
     isSuccess.value = false;
     progress.value = 0;
   } finally {
@@ -116,6 +192,10 @@ defineExpose({ openModal, closeModal });
 
         <div v-if="error" class="mb-4 text-red-500 text-sm">
           {{ error }}
+        </div>
+
+        <div v-if="bloqueado" class="mb-4 text-amber-500 text-sm">
+          Tiempo restante para desbloqueo: {{ tiempoRestante }} segundos
         </div>
 
         <div class="relative">
