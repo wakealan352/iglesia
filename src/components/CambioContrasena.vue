@@ -3,7 +3,11 @@
     @submit.prevent="handleSubmit"
     class="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-32"
   >
-    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Cambiar Contraseña</h2>
+    <h2
+      class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent mb-6"
+    >
+      Cambiar Contraseña
+    </h2>
 
     <!-- Old Password Field -->
     <div class="mb-4">
