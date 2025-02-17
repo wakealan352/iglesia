@@ -91,13 +91,11 @@
             Administrar Fechas
           </a>
 
-          <a
-            href="/cambiopass"
+          <button
+            @click="openChangePassword"
             :class="[
-              'flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700',
-              currentPath === '/cambiopass'
-                ? 'text-teal-500 dark:text-teal-400'
-                : 'text-gray-700 dark:text-gray-200',
+              'flex items-center w-full px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-left',
+              'text-gray-700 dark:text-gray-200',
             ]"
           >
             <svg
@@ -114,7 +112,7 @@
               />
             </svg>
             Cambiar Contraseña
-          </a>
+          </button>
 
           <button
             @click="handleLogout"
@@ -138,39 +136,48 @@
         </nav>
       </div>
     </div>
+
+    <!-- Modal de Cambio de Contraseña -->
+    <CambioContrasena ref="cambioContrasenaRef" />
   </div>
 </template>
 
-<script>
-export default {
-  name: "AdminSidebar",
-  props: {
-    isOpen: {
-      type: Boolean,
-      required: true,
-    },
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import CambioContrasena from './CambioContrasena.vue';
+
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true,
   },
-  data() {
-    return {
-      currentPath: "",
-    };
-  },
-  methods: {
-    handleLogout() {
-      window.location.href = "/logout";
-    },
-    updateCurrentPath() {
-      this.currentPath = window.location.pathname;
-    },
-  },
-  mounted() {
-    this.updateCurrentPath();
-    window.addEventListener("popstate", this.updateCurrentPath);
-  },
-  beforeUnmount() {
-    window.removeEventListener("popstate", this.updateCurrentPath);
-  },
+});
+
+const emit = defineEmits(['close']);
+const currentPath = ref('');
+const cambioContrasenaRef = ref(null);
+
+const handleLogout = () => {
+  window.location.href = "/logout";
 };
+
+const openChangePassword = () => {
+  cambioContrasenaRef.value?.openModal();
+  emit('close');
+};
+
+const updateCurrentPath = () => {
+  currentPath.value = window.location.pathname;
+};
+
+onMounted(() => {
+  updateCurrentPath();
+  window.addEventListener("popstate", updateCurrentPath);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("popstate", updateCurrentPath);
+});
 </script>
 
 <style scoped>
