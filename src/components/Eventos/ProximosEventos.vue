@@ -223,7 +223,9 @@ export default {
         "Viernes",
         "Sábado",
       ];
-      return dias[fecha.getDay()];
+      // Ajustamos la fecha a la zona horaria de Bogotá
+      const fechaBogota = new Date(fecha.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+      return dias[fechaBogota.getDay()];
     };
 
     const formatTime = (time) => {
@@ -290,7 +292,8 @@ export default {
       try {
         cargando.value = true;
 
-        const hoy = new Date();
+        // Configuramos la fecha actual en la zona horaria de Bogotá
+        const hoy = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' }));
         hoy.setHours(0, 0, 0, 0);
 
         const finPeriodo = new Date(hoy);
@@ -311,7 +314,8 @@ export default {
           const datosAPI = response.data;
 
           const eventosAPI = datosAPI.map((evento) => {
-            const fechaEvento = new Date(evento.fecha);
+            // Convertimos la fecha a la zona horaria de Bogotá
+            const fechaEvento = new Date(new Date(evento.fecha).toLocaleString('en-US', { timeZone: 'America/Bogota' }));
             return {
               ...evento,
               fecha: fechaEvento,
@@ -349,11 +353,18 @@ export default {
           // Si la API falla, ya tenemos los servicios dominicales cargados
         }
 
-        // Calculamos los días restantes para todos los eventos
+        // Calculamos los días restantes usando la zona horaria de Bogotá
         eventos.value.forEach((evento) => {
-          evento.diasRestantes = Math.ceil(
-            (evento.fecha - hoy) / (1000 * 60 * 60 * 24)
-          );
+          const fechaEventoBogota = new Date(evento.fecha.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+          const hoyBogota = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+          
+          // Ajustamos las fechas para comparar solo días
+          fechaEventoBogota.setHours(0, 0, 0, 0);
+          hoyBogota.setHours(0, 0, 0, 0);
+          
+          // Calculamos la diferencia en días
+          const diferenciaTiempo = fechaEventoBogota.getTime() - hoyBogota.getTime();
+          evento.diasRestantes = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
         });
       } catch (err) {
         console.error("Error al procesar los eventos:", err);
