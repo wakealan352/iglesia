@@ -95,6 +95,9 @@
               <p class="mb-2">
                 <strong>Hora:</strong> {{ formatTime(evento.hora) }}
               </p>
+              <p class="mb-2" v-if="tiempoRestante">
+                <strong>Tiempo restante:</strong> {{ tiempoRestante }}
+              </p>
               <p class="mb-2">
                 <strong>{{ isUrl(evento.lugar) ? 'Link' : 'Lugar' }}: </strong>
                 <template v-if="isUrl(evento.lugar)">
@@ -110,16 +113,7 @@
                 <strong>Descripción:</strong>
                 {{ evento.descripcion }}
               </p>
-              <p class="dark:text-white">
-                <strong>Días restantes:</strong>
-                {{
-                  evento.diasRestantes === 0
-                    ? "Hoy"
-                    : evento.diasRestantes === 1
-                    ? "1 día"
-                    : `${evento.diasRestantes} días`
-                }}
-              </p>
+              <!-- Removed días restantes section -->
             </div>
           </div>
         </div>
@@ -152,6 +146,8 @@ export default {
   data() {
     return {
       imagenAmpliada: false,
+      tiempoRestante: '',
+      intervalId: null,
     };
   },
   methods: {
@@ -162,6 +158,54 @@ export default {
       const ampm = hour >= 12 ? "pm" : "am";
       const formattedHour = hour % 12 || 12;
       return `${formattedHour}:${minutes} ${ampm}`;
+    },
+    calcularTiempoRestante() {
+      if (!this.evento || !this.evento.hora || !this.evento.dia || !this.evento.mes) {
+        this.tiempoRestante = '';
+        return;
+      }
+
+      const [horas, minutos] = this.evento.hora.split(':');
+      const fecha = new Date();
+      fecha.setMonth(this.obtenerNumeroMes(this.evento.mes) - 1);
+      fecha.setDate(parseInt(this.evento.dia));
+      fecha.setHours(parseInt(horas), parseInt(minutos), 0);
+
+      // Crear fecha actual en zona horaria de Bogota
+      const ahora = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+      
+      if (fecha < ahora) {
+        this.tiempoRestante = 'Evento finalizado';
+        return;
+      }
+
+      const diferencia = fecha - ahora;
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+      const horasRestantes = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutosRestantes = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+      let mensaje = '';
+      if (dias > 0) {
+        mensaje = `${dias} días, ${horasRestantes} horas`;
+        if (minutosRestantes > 0) mensaje += ` y ${minutosRestantes} minutos`;
+      } else if (horasRestantes > 0) {
+        mensaje = `${horasRestantes} horas`;
+        if (minutosRestantes > 0) mensaje += ` y ${minutosRestantes} minutos`;
+      } else if (minutosRestantes > 0) {
+        mensaje = `${minutosRestantes} minutos`;
+      } else {
+        mensaje = 'Menos de un minuto';
+      }
+      
+      this.tiempoRestante = mensaje;
+    },
+    obtenerNumeroMes(nombreMes) {
+      const meses = {
+        'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4,
+        'mayo': 5, 'junio': 6, 'julio': 7, 'agosto': 8,
+        'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
+      };
+      return meses[nombreMes.toLowerCase()] || 1;
     },
     isUrl(str) {
       if (!str) return false;
@@ -194,9 +238,15 @@ export default {
   },
   mounted() {
     document.body.classList.add("modal-open");
+    this.calcularTiempoRestante();
+    // Actualizar el tiempo restante cada minuto
+    this.intervalId = setInterval(this.calcularTiempoRestante, 60000);
   },
   beforeUnmount() {
     document.body.classList.remove("modal-open");
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   },
 };
 </script>
