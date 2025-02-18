@@ -31,7 +31,7 @@
       </a>
 
       <!-- Menú de navegación (visible solo en desktop) -->
-      <div class="hidden md:flex items-center justify-between flex-grow">
+      <div class="hidden lg:flex items-center justify-between flex-grow">
         <div class="relative p-[2px] rounded-lg mx-auto">
           <div class="bg-gray-800 md:bg-transparent rounded-lg">
             <ul class="flex font-medium space-x-8 rtl:space-x-reverse nav-menu px-4 py-2">
@@ -176,10 +176,10 @@
           </svg>
         </button>
 
-        <!-- Botón de hamburguesa (visible solo en móvil) -->
+        <!-- Botón de hamburguesa (visible solo en móvil y tablet) -->
         <button
           @click="toggleMenu"
-          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-700 flex md:hidden items-center justify-center relative group"
+          class="h-10 w-10 rounded-lg p-2 hover:bg-gray-700 flex lg:hidden items-center justify-center relative group"
         >
           <!-- Icono de menú -->
           <svg
@@ -219,7 +219,7 @@
   <!-- Menú móvil -->
   <div
     v-show="isMenuOpen"
-    class="fixed top-[72px] left-0 right-0 z-40 animate__animated md:hidden p-4 bg-gray-800"
+    class="fixed top-[72px] left-0 right-0 z-40 animate__animated lg:hidden p-4 bg-gray-800"
     :class="{ 'animate__slideInDown': isMenuOpen }"
   >
     <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gray-100 dark:bg-gradient-to-r dark:from-teal-500 dark:to-blue-500 dark:animate-gradient">
