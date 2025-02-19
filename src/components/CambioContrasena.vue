@@ -211,10 +211,12 @@ const openModal = () => {
     window.location.href = "/login";
     return;
   }
+  document.body.classList.add('modal-open');
   isOpen.value = true;
 };
 
 const closeModal = () => {
+  document.body.classList.remove('modal-open');
   isOpen.value = false;
   // Limpiar el formulario y estado
   formData.oldPassword = "";
@@ -298,5 +300,9 @@ defineExpose({ openModal, closeModal });
 
 .animate__fadeInDown {
   animation-duration: 0.5s;
+}
+
+:global(body.modal-open) {
+  overflow: hidden;
 }
 </style>

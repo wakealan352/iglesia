@@ -59,10 +59,12 @@ const iniciarBloqueo = () => {
 
 const openModal = () => {
   isOpen.value = true;
+  document.body.style.overflow = 'hidden'; // Deshabilitar scroll
 };
 
 const closeModal = () => {
   isOpen.value = false;
+  document.body.style.overflow = ''; // Restaurar scroll
   // Limpiar el formulario y estado
   username.value = "";
   password.value = "";
