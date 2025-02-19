@@ -54,7 +54,7 @@
             <svg
               class="w-5 h-5 mr-3"
               fill="none"
-              stroke="currentColor"
+              :stroke="currentPath === '/admin/eventos' ? 'rgb(20 184 166)' : 'currentColor'"
               viewBox="0 0 24 24"
             >
               <path
@@ -80,7 +80,7 @@
             <svg
               class="w-5 h-5 mr-3"
               fill="none"
-              stroke="currentColor"
+              :stroke="currentPath === '/admin/fechas' ? 'rgb(20 184 166)' : 'currentColor'"
               viewBox="0 0 24 24"
             >
               <path
