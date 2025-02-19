@@ -101,7 +101,7 @@
               <p class="mb-2">
                 <strong>{{ isUrl(evento.lugar) ? 'Link' : 'Lugar' }}: </strong>
                 <template v-if="isUrl(evento.lugar)">
-                  <a :href="evento.lugar" target="_blank" class="text-blue-500 hover:text-blue-700 underline">
+                  <a :href="evento.lugar" target="_blank" class="text-blue-500 dark:text-teal-300 hover:text-blue-700 dark:hover:text-teal-200 underline">
                     {{ evento.lugar }}
                   </a>
                 </template>
