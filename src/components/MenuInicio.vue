@@ -133,6 +133,7 @@
           >
             <svg
               class="w-6 h-6 text-teal-400"
+              :class="{ 'fill-current': adminMenuVisible }"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
