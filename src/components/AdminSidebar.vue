@@ -43,6 +43,7 @@
         <nav class="space-y-2">
           <a
             href="/admin/eventos"
+            @click.prevent="handleNavigation('/admin/eventos')"
             :class="[
               'flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700',
               currentPath === '/admin/eventos'
@@ -68,6 +69,7 @@
 
           <a
             href="/admin/fechas"
+            @click.prevent="handleNavigation('/admin/fechas')"
             :class="[
               'flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700',
               currentPath === '/admin/fechas'
@@ -156,6 +158,11 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 const currentPath = ref('');
 const cambioContrasenaRef = ref(null);
+
+const handleNavigation = (path) => {
+  emit('close');
+  window.location.href = path;
+};
 
 const handleLogout = () => {
   window.location.href = "/logout";
