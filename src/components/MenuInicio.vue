@@ -310,7 +310,9 @@ export default {
     },
     loadDarkModePreference() {
       const darkMode = localStorage.getItem("darkMode");
-      if (darkMode === "true") {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (darkMode === "true" || (!darkMode && prefersDark)) {
         document.documentElement.classList.add("dark");
       } else {
         document.documentElement.classList.remove("dark");
