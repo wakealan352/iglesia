@@ -166,11 +166,18 @@
                 >
                   <div class="flex items-center">
                     <span
-                      :class="
-                        'inline-block w-3 h-3 rounded-full mr-2 ' +
-                        getColorClass(fechaForm.tipoIcono)
-                      "
-                    ></span>
+                      class="inline-flex items-center justify-center w-6 h-6 rounded-full mr-2"
+                      :class="getColorClass(fechaForm.tipoIcono)"
+                    >
+                      <img
+                        v-if="fechaForm.tipoIcono"
+                        :src="`/insignias/${getIconFileName(
+                          fechaForm.tipoIcono
+                        )}`"
+                        :alt="fechaForm.tipoIcono"
+                        class="w-4 h-4"
+                      />
+                    </span>
                     {{ fechaForm.tipoIcono || "Seleccione una opción" }}
                   </div>
                 </button>
@@ -191,11 +198,15 @@
                   >
                     <div class="flex items-center">
                       <span
-                        :class="
-                          'inline-block w-3 h-3 rounded-full mr-2 ' +
-                          option.colorClass
-                        "
-                      ></span>
+                        class="inline-flex items-center justify-center w-6 h-6 rounded-full mr-2"
+                        :class="option.colorClass"
+                      >
+                        <img
+                          :src="`/insignias/${option.icon}`"
+                          :alt="option.label"
+                          class="w-4 h-4"
+                        />
+                      </span>
                       {{ option.label }}
                     </div>
                   </div>
@@ -283,36 +294,43 @@ export default {
           value: "Canasta de amor",
           label: "Canasta de amor",
           colorClass: "bg-red-500",
+          icon: "canasta-de-amor.svg",
         },
         {
           value: "Cena del Señor",
           label: "Cena del Señor",
           colorClass: "bg-red-700",
+          icon: "cena-del-senor.svg",
         },
         {
           value: "Reunión de damas",
           label: "Reunión de damas",
           colorClass: "bg-pink-500",
+          icon: "reunion-de-damas.svg",
         },
         {
           value: "Reunión de varones",
           label: "Reunión de varones",
           colorClass: "bg-blue-500",
+          icon: "reunion-de-varones.svg",
         },
         {
           value: "Reunión de jovenes",
           label: "Reunión de jovenes",
           colorClass: "bg-teal-500",
+          icon: "reunion-de-jovenes.svg",
         },
         {
           value: "Domingo misionero",
           label: "Domingo misionero",
           colorClass: "bg-green-500",
+          icon: "domingo-misionero.svg",
         },
         {
           value: "Culto de oración",
           label: "Culto de oración",
           colorClass: "bg-violet-500",
+          icon: "culto-de-oracion.svg",
         },
       ],
       fechaForm: {
@@ -375,6 +393,10 @@ export default {
     getColorClass(value) {
       const option = this.iconOptions.find((opt) => opt.value === value);
       return option ? option.colorClass : "";
+    },
+    getIconFileName(value) {
+      const option = this.iconOptions.find((opt) => opt.value === value);
+      return option ? option.icon : "default.svg";
     },
     selectOption(option) {
       this.fechaForm.tipoIcono = option.value;
