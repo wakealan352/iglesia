@@ -229,7 +229,7 @@
                 <span v-if="fecha.banner" title="Tiene banner">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-green-500"
+                    class="h-6 w-6 text-green-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -244,7 +244,7 @@
                 </span>
                 <span
                   v-if="fecha.infoIconoTexto"
-                  :class="`inline-flex items-center justify-center w-6 h-6 rounded-full ${getColorClass(
+                  :class="`inline-flex items-center justify-center w-5 h-5 rounded-full ${getColorClass(
                     fecha.infoIconoTexto
                   )}`"
                   :title="fecha.infoIconoTexto"
@@ -447,7 +447,7 @@
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5"
+                            class="h-4 w-4"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -462,7 +462,7 @@
                         </span>
                         <span
                           v-if="fecha.infoIconoTexto"
-                          :class="`inline-flex items-center justify-center w-6 h-6 rounded-full ${getColorClass(
+                          :class="`inline-flex items-center justify-center w-4 h-4 rounded-full ${getColorClass(
                             fecha.infoIconoTexto
                           )}`"
                           :title="fecha.infoIconoTexto"
@@ -473,7 +473,7 @@
                               fecha.infoIconoTexto
                             )}`"
                             :alt="fecha.infoIconoTexto"
-                            class="w-4 h-4"
+                            class="w-2.5 h-2.5"
                           />
                         </span>
                       </div>
