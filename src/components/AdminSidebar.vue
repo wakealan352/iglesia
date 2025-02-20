@@ -40,6 +40,29 @@
           </button>
         </div>
 
+        <!-- Perfil del Usuario -->
+        <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-lg"
+              :style="{ backgroundColor: getUserColor(displayName) }"
+            >
+              {{ getUserInitial(displayName) }}
+            </div>
+            <div class="flex-1">
+              <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ displayName || "Usuario" }}
+              </h3>
+              <button
+                @click="openProfileModal"
+                class="text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300"
+              >
+                Editar perfil
+              </button>
+            </div>
+          </div>
+        </div>
+
         <nav class="space-y-2">
           <a
             href="/admin/eventos"
@@ -54,7 +77,11 @@
             <svg
               class="w-5 h-5 mr-3"
               fill="none"
-              :stroke="currentPath === '/admin/eventos' ? 'rgb(20 184 166)' : 'currentColor'"
+              :stroke="
+                currentPath === '/admin/eventos'
+                  ? 'rgb(20 184 166)'
+                  : 'currentColor'
+              "
               viewBox="0 0 24 24"
             >
               <path
@@ -80,7 +107,11 @@
             <svg
               class="w-5 h-5 mr-3"
               fill="none"
-              :stroke="currentPath === '/admin/fechas' ? 'rgb(20 184 166)' : 'currentColor'"
+              :stroke="
+                currentPath === '/admin/fechas'
+                  ? 'rgb(20 184 166)'
+                  : 'currentColor'
+              "
               viewBox="0 0 24 24"
             >
               <path
@@ -141,12 +172,23 @@
 
     <!-- Modal de Cambio de Contraseña -->
     <CambioContrasena ref="cambioContrasenaRef" />
+
+    <!-- Modal de Perfil -->
+    <ProfileModal
+      :is-open="showProfileModal"
+      :current-display-name="displayName"
+      @close="showProfileModal = false"
+      @update="handleProfileUpdate"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import CambioContrasena from './CambioContrasena.vue';
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import CambioContrasena from "./CambioContrasena.vue";
+import ProfileModal from "./ProfileModal.vue";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, getDoc, doc, onSnapshot } from "firebase/firestore";
 
 const props = defineProps({
   isOpen: {
@@ -155,12 +197,49 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['close']);
-const currentPath = ref('');
+const emit = defineEmits(["close"]);
+const currentPath = ref("");
 const cambioContrasenaRef = ref(null);
+const displayName = ref("");
+const showProfileModal = ref(false);
+
+// Función para obtener la inicial del nombre de usuario
+const getUserInitial = (name) => {
+  return name ? name.charAt(0).toUpperCase() : "U";
+};
+
+// Función para generar un color basado en el nombre de usuario
+const getUserColor = (name) => {
+  const colors = [
+    "#2196F3", // Azul
+    "#4CAF50", // Verde
+    "#F44336", // Rojo
+    "#9C27B0", // Púrpura
+    "#FF9800", // Naranja
+    "#009688", // Verde azulado
+    "#E91E63", // Rosa
+    "#673AB7", // Violeta
+  ];
+
+  if (!name) return colors[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+};
+
+const openProfileModal = () => {
+  showProfileModal.value = true;
+  emit("close");
+};
+
+const handleProfileUpdate = (newDisplayName) => {
+  displayName.value = newDisplayName;
+};
 
 const handleNavigation = (path) => {
-  emit('close');
+  emit("close");
   window.location.href = path;
 };
 
@@ -170,20 +249,72 @@ const handleLogout = () => {
 
 const openChangePassword = () => {
   cambioContrasenaRef.value?.openModal();
-  emit('close');
+  emit("close");
 };
 
 const updateCurrentPath = () => {
   currentPath.value = window.location.pathname;
 };
 
-onMounted(() => {
+const loadUserProfile = async () => {
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      const db = getFirestore();
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        displayName.value =
+          userDoc.data().displayName || user.displayName || "";
+      } else {
+        displayName.value = user.displayName || "";
+      }
+    }
+  } catch (error) {
+    console.error("Error al cargar el perfil:", error);
+  }
+};
+
+// Variable para almacenar la desuscripción del listener
+let unsubscribeUser = null;
+
+onMounted(async () => {
   updateCurrentPath();
   window.addEventListener("popstate", updateCurrentPath);
+
+  // Configurar el listener de autenticación
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Cargar el perfil inicial
+      loadUserProfile();
+
+      // Configurar el listener en tiempo real para Firestore
+      const db = getFirestore();
+      unsubscribeUser = onSnapshot(
+        doc(db, "users", user.uid),
+        (doc) => {
+          if (doc.exists()) {
+            displayName.value =
+              doc.data().displayName || user.displayName || "";
+          } else {
+            displayName.value = user.displayName || "";
+          }
+        },
+        (error) => {
+          console.error("Error al escuchar cambios del perfil:", error);
+        }
+      );
+    }
+  });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("popstate", updateCurrentPath);
+  // Limpiar el listener de Firestore
+  if (unsubscribeUser) {
+    unsubscribeUser();
+  }
 });
 </script>
 
