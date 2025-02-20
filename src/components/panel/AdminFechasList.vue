@@ -14,26 +14,6 @@
         </p>
       </div>
       <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
-        <button
-          @click="openModal()"
-          class="w-full sm:w-auto px-6 py-2.5 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-md flex items-center justify-center gap-2 text-sm font-medium bg-gradient-to-r from-teal-600 to-teal-500 text-white hover:from-teal-700 hover:to-teal-600"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          Nueva Fecha
-        </button>
         <!-- Menú de acciones masivas - Solo visible en escritorio -->
         <transition
           enter-active-class="animate__animated animate__fadeIn"
@@ -41,7 +21,7 @@
         >
           <div
             v-if="selectedFechas.length > 0"
-            class="hidden md:flex items-center gap-2"
+            class="hidden md:flex items-center gap-2 order-2 sm:order-1"
           >
             <span
               class="text-sm text-gray-600 dark:text-gray-300 hidden lg:inline"
@@ -69,6 +49,26 @@
             </button>
           </div>
         </transition>
+        <button
+          @click="openModal()"
+          class="w-full sm:w-auto px-6 py-2.5 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-md flex items-center justify-center gap-2 text-sm font-medium bg-gradient-to-r from-teal-600 to-teal-500 text-white hover:from-teal-700 hover:to-teal-600 order-1 sm:order-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Nueva Fecha
+        </button>
       </div>
     </div>
 
