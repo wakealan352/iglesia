@@ -244,11 +244,17 @@
                 </span>
                 <span
                   v-if="fecha.infoIconoTexto"
-                  :class="`h-4 w-4 rounded-full ${getColorClass(
+                  :class="`inline-flex items-center justify-center w-6 h-6 rounded-full ${getColorClass(
                     fecha.infoIconoTexto
                   )}`"
                   :title="fecha.infoIconoTexto"
-                ></span>
+                >
+                  <img
+                    :src="`/insignias/${getIconFileName(fecha.infoIconoTexto)}`"
+                    :alt="fecha.infoIconoTexto"
+                    class="w-4 h-4"
+                  />
+                </span>
               </div>
             </td>
             <td class="px-3 md:px-4 lg:px-6 py-4 whitespace-nowrap">
@@ -455,11 +461,19 @@
                         </span>
                         <span
                           v-if="fecha.infoIconoTexto"
-                          :class="`h-4 w-4 rounded-full ${getColorClass(
+                          :class="`inline-flex items-center justify-center w-6 h-6 rounded-full ${getColorClass(
                             fecha.infoIconoTexto
                           )}`"
                           :title="fecha.infoIconoTexto"
-                        ></span>
+                        >
+                          <img
+                            :src="`/insignias/${getIconFileName(
+                              fecha.infoIconoTexto
+                            )}`"
+                            :alt="fecha.infoIconoTexto"
+                            class="w-4 h-4"
+                          />
+                        </span>
                       </div>
                       <!-- Indicadores de deslizamiento -->
                       <div class="flex items-center space-x-4">
@@ -758,6 +772,19 @@ export default {
           this.isLoading = false;
         }
       }
+    },
+    getIconFileName(value) {
+      const iconOptions = [
+        { value: "Canasta de amor", icon: "canasta-de-amor.svg" },
+        { value: "Cena del Señor", icon: "cena-del-senor.svg" },
+        { value: "Reunión de damas", icon: "reunion-de-damas.svg" },
+        { value: "Reunión de varones", icon: "reunion-de-varones.svg" },
+        { value: "Reunión de jovenes", icon: "reunion-de-jovenes.svg" },
+        { value: "Domingo misionero", icon: "domingo-misionero.svg" },
+        { value: "Culto de oración", icon: "culto-de-oracion.svg" },
+      ];
+      const option = iconOptions.find((opt) => opt.value === value);
+      return option ? option.icon : "default.svg";
     },
   },
 };
