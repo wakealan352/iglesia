@@ -7,7 +7,9 @@
         <i class="fas fa-calendar-alt text-3xl text-teal-500"> </i>
         <h2 class="text-3xl font-semibold dark:text-white">Próximos eventos</h2>
       </div>
-      <p class="text-gray-600 dark:text-gray-300 ml-1">Mantente al día con nuestras próximas actividades y servicios</p>
+      <p class="text-gray-600 dark:text-gray-300 ml-1">
+        Mantente al día con nuestras próximas actividades y servicios
+      </p>
     </div>
 
     <!-- Estado de carga -->
@@ -164,7 +166,9 @@
                     class="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-all duration-300 dark:bg-teal-500 dark:hover:bg-teal-700 transform hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     <span>Detalles</span>
-                    <i class="fas fa-arrow-right text-sm transition-transform group-hover:translate-x-1"></i>
+                    <i
+                      class="fas fa-arrow-right text-sm transition-transform group-hover:translate-x-1"
+                    ></i>
                   </button>
                 </div>
               </div>
@@ -223,8 +227,9 @@ export default {
         "Viernes",
         "Sábado",
       ];
-      // Ajustamos la fecha a la zona horaria de Bogotá
-      const fechaBogota = new Date(fecha.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+      // Aseguramos que la fecha esté en la zona horaria de Bogotá
+      const fechaBogota =
+        fecha instanceof Date ? fecha : new Date(fecha + "T00:00:00-05:00");
       return dias[fechaBogota.getDay()];
     };
 
@@ -240,8 +245,8 @@ export default {
     const isUrl = (str) => {
       if (!str) return false;
       // Agregar soporte para URLs que empiezan con www.
-      if (str.startsWith('www.')) {
-        str = 'http://' + str;
+      if (str.startsWith("www.")) {
+        str = "http://" + str;
       }
       try {
         new URL(str);
@@ -253,23 +258,29 @@ export default {
 
     const generarServiciosDominicales = (inicio, fin) => {
       const servicios = [];
-      let fecha = new Date(inicio);
+      // Aseguramos que la fecha inicial esté en la zona horaria de Bogotá
+      let fecha = new Date(
+        inicio.toLocaleString("en-US", { timeZone: "America/Bogota" })
+      );
       fecha.setDate(fecha.getDate() + ((7 - fecha.getDay()) % 7));
 
       while (fecha <= fin) {
         const esPrimerDomingo = fecha.getDate() <= 7;
+        const fechaServicio = new Date(
+          fecha.toLocaleString("en-US", { timeZone: "America/Bogota" })
+        );
         servicios.push({
-          fecha: new Date(fecha),
+          fecha: fechaServicio,
           titulo: "Servicio dominical",
-          hora: "10:00", // Modificado para consistencia
+          hora: "10:00",
           lugar: "Salón Comunal Asovivir",
           descripcion: esPrimerDomingo
             ? "Cena del Señor"
             : "Servicio dominical semanal.",
           infoAdicional: true,
           banner: null,
-          dia: fecha.getDate().toString().padStart(2, "0"),
-          mes: fecha.toLocaleString("es-CO", { month: "long" }),
+          dia: fechaServicio.getDate().toString().padStart(2, "0"),
+          mes: fechaServicio.toLocaleString("es-CO", { month: "long" }),
           diaSemana: "Domingo",
         });
         fecha.setDate(fecha.getDate() + 7);
@@ -293,13 +304,17 @@ export default {
         cargando.value = true;
 
         // Configuramos la fecha actual en la zona horaria de Bogotá
-        const hoy = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+        const hoy = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+        );
         hoy.setHours(0, 0, 0, 0);
 
-        const finPeriodo = new Date(hoy);
-        finPeriodo.setDate(finPeriodo.getDate() + 27); //Cantidad dias en el calendario
+        const finPeriodo = new Date(
+          hoy.toLocaleString("en-US", { timeZone: "America/Bogota" })
+        );
+        finPeriodo.setDate(finPeriodo.getDate() + 27);
 
-        // Primero generamos los servicios dominicales
+        // Generamos los servicios dominicales
         const serviciosDominicales = generarServiciosDominicales(
           hoy,
           finPeriodo
@@ -309,13 +324,13 @@ export default {
         eventos.value = serviciosDominicales;
 
         try {
-          // Intentamos cargar los eventos de la API
+          // Cargamos los eventos de la API
           const response = await fechas.getAll();
           const datosAPI = response.data;
 
           const eventosAPI = datosAPI.map((evento) => {
             // Convertimos la fecha a la zona horaria de Bogotá
-            const fechaEvento = new Date(new Date(evento.fecha).toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+            const fechaEvento = new Date(evento.fecha + "T00:00:00-05:00");
             return {
               ...evento,
               fecha: fechaEvento,
@@ -325,15 +340,18 @@ export default {
             };
           });
 
-          // Combinamos los eventos de la API con los servicios dominicales
+          // Combinamos los eventos
           eventos.value = [...serviciosDominicales, ...eventosAPI]
             .filter((evento) => {
-              return evento.fecha >= hoy && evento.fecha <= finPeriodo;
+              const fechaEvento = new Date(evento.fecha);
+              return fechaEvento >= hoy && fechaEvento <= finPeriodo;
             })
-            .sort((a, b) => a.fecha - b.fecha)
+            .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
             .reduce((acc, evento) => {
               const index = acc.findIndex(
-                (e) => e.fecha.getTime() === evento.fecha.getTime()
+                (e) =>
+                  new Date(e.fecha).getTime() ===
+                  new Date(evento.fecha).getTime()
               );
               if (index === -1) {
                 acc.push(evento);
@@ -345,27 +363,23 @@ export default {
               }
               return acc;
             }, []);
+
+          // Calculamos los días restantes
+          eventos.value.forEach((evento) => {
+            const fechaEvento = new Date(evento.fecha);
+            fechaEvento.setHours(0, 0, 0, 0);
+
+            const diferenciaTiempo = fechaEvento.getTime() - hoy.getTime();
+            evento.diasRestantes = Math.floor(
+              diferenciaTiempo / (1000 * 60 * 60 * 24)
+            );
+          });
         } catch (apiError) {
           console.warn(
             "No se pudieron cargar los eventos de la API, usando solo servicios dominicales:",
             apiError
           );
-          // Si la API falla, ya tenemos los servicios dominicales cargados
         }
-
-        // Calculamos los días restantes usando la zona horaria de Bogotá
-        eventos.value.forEach((evento) => {
-          const fechaEventoBogota = new Date(evento.fecha.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
-          const hoyBogota = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' }));
-          
-          // Ajustamos las fechas para comparar solo días
-          fechaEventoBogota.setHours(0, 0, 0, 0);
-          hoyBogota.setHours(0, 0, 0, 0);
-          
-          // Calculamos la diferencia en días
-          const diferenciaTiempo = fechaEventoBogota.getTime() - hoyBogota.getTime();
-          evento.diasRestantes = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
-        });
       } catch (err) {
         console.error("Error al procesar los eventos:", err);
         error.value =
@@ -419,7 +433,8 @@ export default {
 
 .folded-corner:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .folded-corner::after {
