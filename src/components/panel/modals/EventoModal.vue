@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-  ref,
-  defineEmits,
-  defineProps,
-  watch,
-  onMounted,
-  onUnmounted,
-} from "vue";
+import { ref, defineEmits, defineProps, watch } from "vue";
 import "animate.css";
 
 const props = defineProps({
@@ -120,10 +113,6 @@ watch([selectedImageOption, customImageUrl], () => {
     );
     formData.value.image = selected?.url || defaultImageUrl;
   }
-});
-
-onUnmounted(() => {
-  document.body.classList.remove("modal-open");
 });
 
 const handleSubmit = async () => {
