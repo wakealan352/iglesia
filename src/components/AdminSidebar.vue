@@ -188,7 +188,7 @@ import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import CambioContrasena from "./CambioContrasena.vue";
 import ProfileModal from "./ProfileModal.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getUserProfile, subscribeToUserProfile } from "../lib/userService";
+import { usuarios } from "../lib/api.ts";
 
 const props = defineProps({
   isOpen: {
@@ -261,7 +261,7 @@ const loadUserProfile = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
-      const profile = await getUserProfile(user.uid);
+      const profile = await usuarios.getProfile(user.uid);
       displayName.value = profile.displayName;
     }
   } catch (error) {
@@ -284,7 +284,7 @@ onMounted(async () => {
       loadUserProfile();
 
       // Configurar el listener en tiempo real
-      unsubscribeUser = subscribeToUserProfile(user.uid, (profile) => {
+      unsubscribeUser = usuarios.subscribeToProfile(user.uid, (profile) => {
         displayName.value = profile.displayName;
       });
     }

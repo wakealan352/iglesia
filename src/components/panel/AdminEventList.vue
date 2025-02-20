@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { eventos } from "../../lib/api.ts";
+import { eventos, usuarios, type UserProfile } from "../../lib/api.ts";
 import EventoModal from "./modals/EventoModal.vue";
 import { auth } from "../../lib/firebase";
-import { getUserProfile, type UserProfile } from "../../lib/userService";
 
 interface EventoAPI {
   id: string;
@@ -50,7 +49,7 @@ const loadUserProfiles = async (events: Evento[]) => {
 
   for (const userId of userIds) {
     try {
-      const profile = await getUserProfile(userId);
+      const profile = await usuarios.getProfile(userId);
       userProfiles.value[userId] = profile;
     } catch (err) {
       console.error(`Error al cargar el perfil del usuario ${userId}:`, err);
@@ -176,7 +175,7 @@ watch(formMode, (newMode) => {
 
 const loadUserProfile = async () => {
   if (auth.currentUser) {
-    const profile = await getUserProfile(auth.currentUser.uid);
+    const profile = await usuarios.getProfile(auth.currentUser.uid);
     userName.value = profile.displayName;
   }
 };
