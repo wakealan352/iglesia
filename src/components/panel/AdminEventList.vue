@@ -2,6 +2,8 @@
 import { ref, onMounted, watch } from "vue";
 import { eventos } from "../../lib/api.ts";
 import EventoModal from "./modals/EventoModal.vue";
+import { auth } from "../../lib/firebase";
+import { getUserProfile, type UserProfile } from "../../lib/userService";
 
 interface EventoAPI {
   id: string;
@@ -28,6 +30,7 @@ const error = ref("");
 const formMode = ref<"closed" | "create" | "edit">("closed");
 const editingEvent = ref<Evento | null>(null);
 const isLoading = ref(true);
+const userName = ref("");
 
 const loadEvents = async () => {
   try {
@@ -139,8 +142,16 @@ watch(formMode, (newMode) => {
   }
 });
 
+const loadUserProfile = async () => {
+  if (auth.currentUser) {
+    const profile = await getUserProfile(auth.currentUser.uid);
+    userName.value = profile.displayName;
+  }
+};
+
 onMounted(() => {
   loadEvents();
+  loadUserProfile();
 });
 </script>
 
@@ -151,9 +162,15 @@ onMounted(() => {
     >
       <div>
         <h2
-          class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent"
+          class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent flex items-center gap-2"
         >
           Administrar Anuncios
+          <span
+            v-if="userName"
+            class="text-lg text-gray-600 dark:text-gray-400"
+          >
+            - {{ userName }}
+          </span>
         </h2>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Gestiona los anuncios y eventos especiales

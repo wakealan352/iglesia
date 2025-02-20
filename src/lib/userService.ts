@@ -3,25 +3,32 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 export interface UserProfile {
   displayName: string;
-  // Aquí puedes agregar más campos del perfil si los necesitas
+  email: string;
+  updatedAt: Date;
 }
 
 export const getUserProfile = async (userId: string): Promise<UserProfile> => {
   try {
     const userDoc = await getDoc(doc(db, "users", userId));
     if (userDoc.exists()) {
+      const data = userDoc.data();
       return {
-        displayName:
-          userDoc.data().displayName || auth.currentUser?.displayName || "",
+        displayName: data.displayName || auth.currentUser?.displayName || "",
+        email: data.email || auth.currentUser?.email || "",
+        updatedAt: data.updatedAt?.toDate() || new Date(),
       };
     }
     return {
       displayName: auth.currentUser?.displayName || "",
+      email: auth.currentUser?.email || "",
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error("Error al cargar el perfil:", error);
     return {
       displayName: "",
+      email: "",
+      updatedAt: new Date(),
     };
   }
 };
@@ -34,13 +41,17 @@ export const subscribeToUserProfile = (
     doc(db, "users", userId),
     (doc) => {
       if (doc.exists()) {
+        const data = doc.data();
         callback({
-          displayName:
-            doc.data().displayName || auth.currentUser?.displayName || "",
+          displayName: data.displayName || auth.currentUser?.displayName || "",
+          email: data.email || auth.currentUser?.email || "",
+          updatedAt: data.updatedAt?.toDate() || new Date(),
         });
       } else {
         callback({
           displayName: auth.currentUser?.displayName || "",
+          email: auth.currentUser?.email || "",
+          updatedAt: new Date(),
         });
       }
     },
