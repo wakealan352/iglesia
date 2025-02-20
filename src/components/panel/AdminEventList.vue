@@ -13,6 +13,10 @@ interface EventoAPI {
   linkBoton?: string;
   image?: string;
   fecha?: string;
+  createdAt?: any;
+  createdBy?: string;
+  updatedAt?: any;
+  updatedBy?: string;
 }
 
 interface Evento {
@@ -23,6 +27,10 @@ interface Evento {
   linkBoton?: string;
   image?: string;
   fecha?: string;
+  createdAt?: any;
+  createdBy?: string;
+  updatedAt?: any;
+  updatedBy?: string;
 }
 
 const eventList = ref<Evento[]>([]);
@@ -31,6 +39,24 @@ const formMode = ref<"closed" | "create" | "edit">("closed");
 const editingEvent = ref<Evento | null>(null);
 const isLoading = ref(true);
 const userName = ref("");
+const userProfiles = ref<{ [key: string]: UserProfile }>({});
+
+const loadUserProfiles = async (events: Evento[]) => {
+  const userIds = new Set<string>();
+  events.forEach((event) => {
+    if (event.createdBy) userIds.add(event.createdBy);
+    if (event.updatedBy) userIds.add(event.updatedBy);
+  });
+
+  for (const userId of userIds) {
+    try {
+      const profile = await getUserProfile(userId);
+      userProfiles.value[userId] = profile;
+    } catch (err) {
+      console.error(`Error al cargar el perfil del usuario ${userId}:`, err);
+    }
+  }
+};
 
 const loadEvents = async () => {
   try {
@@ -45,12 +71,18 @@ const loadEvents = async () => {
         linkBoton: item.linkBoton,
         image: item.image,
         fecha: item.fecha,
+        createdAt: item.createdAt,
+        createdBy: item.createdBy,
+        updatedAt: item.updatedAt,
+        updatedBy: item.updatedBy,
       }))
       .sort((a, b) => {
         const fechaA = a.fecha ? new Date(a.fecha).getTime() : 0;
         const fechaB = b.fecha ? new Date(b.fecha).getTime() : 0;
         return fechaB - fechaA;
       });
+
+    await loadUserProfiles(eventList.value);
   } catch (err) {
     error.value = "Error al cargar los eventos";
   } finally {
@@ -165,12 +197,6 @@ onMounted(() => {
           class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent flex items-center gap-2"
         >
           Administrar Anuncios
-          <span
-            v-if="userName"
-            class="text-lg text-gray-600 dark:text-gray-400"
-          >
-            - {{ userName }}
-          </span>
         </h2>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Gestiona los anuncios y eventos especiales
@@ -301,19 +327,45 @@ onMounted(() => {
           </div>
 
           <div v-else class="flex-grow">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
               {{ evento.titulo }}
             </h3>
-            <p class="text-gray-600 mb-3">{{ evento.descripcion }}</p>
+            <p class="text-gray-600 dark:text-gray-400 mb-3">
+              {{ evento.descripcion }}
+            </p>
 
             <div
               v-if="evento.textoBoton || evento.linkBoton"
-              class="text-sm text-gray-500 mb-3"
+              class="text-sm text-gray-500 dark:text-gray-400 mb-3"
             >
               <p v-if="evento.textoBoton">
                 Texto del botón: {{ evento.textoBoton }}
               </p>
               <p v-if="evento.linkBoton">Link: {{ evento.linkBoton }}</p>
+            </div>
+          </div>
+
+          <!-- Información de creación y modificación -->
+          <div
+            class="text-xs text-gray-500 dark:text-gray-400 mt-2 mb-2 space-y-1 border-t border-gray-200 dark:border-gray-600 pt-2"
+          >
+            <div
+              v-if="evento.createdBy && userProfiles[evento.createdBy]"
+              class="flex items-center"
+            >
+              <span class="font-medium mr-1">Creado por:</span>
+              <span class="text-teal-600 dark:text-teal-400">{{
+                userProfiles[evento.createdBy].displayName
+              }}</span>
+            </div>
+            <div
+              v-if="evento.updatedBy && userProfiles[evento.updatedBy]"
+              class="flex items-center"
+            >
+              <span class="font-medium mr-1">Modificado por:</span>
+              <span class="text-teal-600 dark:text-teal-400">{{
+                userProfiles[evento.updatedBy].displayName
+              }}</span>
             </div>
           </div>
 
