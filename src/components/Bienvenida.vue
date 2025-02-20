@@ -13,7 +13,7 @@
       <div class="relative h-full flex items-center justify-center z-10">
         <div class="text-center text-white p-5 selection:bg-teal-500">
           <h1 class="text-4xl sm:text-5xl font-bold mb-4">
-            Bienvenido a nuestra iglesia
+            Bienvenido {{ displayName ? displayName : "a nuestra iglesia" }}
           </h1>
           <p class="text-xl sm:text-2xl">
             Un lugar de fe, comunidad y crecimiento espiritual
@@ -57,17 +57,18 @@
 </template>
 
 <script>
+import { auth } from "../lib/firebase";
+import { usuarios } from "../lib/api";
+import { onAuthStateChanged } from "firebase/auth";
+
 export default {
   data() {
     return {
       heroImage: "https://i.ibb.co/vCWvVYb/principal.jpg",
+      displayName: "",
+      unsubscribe: null,
+      authUnsubscribe: null,
     };
-  },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  beforeUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
     handleScroll() {
@@ -82,6 +83,53 @@ export default {
         }
       }
     },
+    async setupProfileSubscription() {
+      if (auth.currentUser) {
+        try {
+          // Primero intentamos obtener el perfil directamente
+          const profile = await usuarios.getProfile(auth.currentUser.uid);
+          this.displayName = profile.displayName;
+
+          // Luego nos suscribimos a los cambios
+          this.unsubscribe = usuarios.subscribeToProfile(
+            auth.currentUser.uid,
+            (profile) => {
+              this.displayName = profile.displayName;
+            }
+          );
+        } catch (error) {
+          console.error("Error al obtener el perfil:", error);
+        }
+      } else {
+        this.displayName = "";
+      }
+    },
+  },
+  async mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+
+    // Observar cambios en el estado de autenticación
+    this.authUnsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.setupProfileSubscription();
+      } else {
+        this.displayName = "";
+        if (this.unsubscribe) {
+          this.unsubscribe();
+          this.unsubscribe = null;
+        }
+      }
+    });
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+    // Limpiar todas las suscripciones
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+    if (this.authUnsubscribe) {
+      this.authUnsubscribe();
+    }
   },
 };
 </script>
