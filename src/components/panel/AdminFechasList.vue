@@ -497,10 +497,10 @@
                           />
                         </span>
                         <div class="text-xs text-gray-500 dark:text-gray-400">
-                          <div>Agregado por: {{ fecha.createdBy }}</div>
                           <div v-if="fecha.updatedBy">
                             Modificado por: {{ fecha.updatedBy }}
                           </div>
+                          <div v-else>Agregado por: {{ fecha.createdBy }}</div>
                         </div>
                       </div>
                       <!-- Indicadores de deslizamiento -->
