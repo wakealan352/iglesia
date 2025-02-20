@@ -65,7 +65,7 @@
     </div>
 
     <!-- Lista de Fechas -->
-    <div v-if="isLoading" class="text-center py-4">Cargando fechas...</div>
+    <div v-if="isLoading" class="text-center py-4 dark:text-white">Cargando fechas...</div>
 
     <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
       <!-- Vista de tabla para tablet y desktop -->

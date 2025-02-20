@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { ref, defineEmits, defineProps, watch, onMounted, onUnmounted } from "vue";
-import 'animate.css';
+import {
+  ref,
+  defineEmits,
+  defineProps,
+  watch,
+  onMounted,
+  onUnmounted,
+} from "vue";
+import "animate.css";
 
 const props = defineProps({
   event: {
@@ -28,7 +35,8 @@ const emit = defineEmits(["submit", "cancel"]);
 const formData = ref({ ...props.event });
 const selectedImageOption = ref("");
 const customImageUrl = ref("");
-const defaultImageUrl = "https://i.ibb.co/bM0Y4b9K/Captura-de-pantalla-2025-02-12-125243.png";
+const defaultImageUrl =
+  "https://i.ibb.co/bM0Y4b9K/Captura-de-pantalla-2025-02-12-125243.png";
 
 const imageOptions = [
   {
@@ -66,15 +74,18 @@ const imageOptions = [
 
 const showModal = ref(false);
 
-watch(() => props.isOpen, (newValue) => {
-  if (newValue) {
-    showModal.value = true;
-    document.body.classList.add('modal-open');
-  } else {
-    showModal.value = false;
-    document.body.classList.remove('modal-open');
+watch(
+  () => props.isOpen,
+  (newValue) => {
+    if (newValue) {
+      showModal.value = true;
+      document.body.classList.add("modal-open");
+    } else {
+      showModal.value = false;
+      document.body.classList.remove("modal-open");
+    }
   }
-});
+);
 
 watch(
   () => props.event,
@@ -112,19 +123,52 @@ watch([selectedImageOption, customImageUrl], () => {
 });
 
 onUnmounted(() => {
-  document.body.classList.remove('modal-open');
+  document.body.classList.remove("modal-open");
 });
 
-const handleSubmit = () => {
-  emit("submit", formData.value);
+const handleSubmit = async () => {
+  try {
+    // Asegurarse de que la imagen tenga un valor válido
+    if (!formData.value.image || formData.value.image === "") {
+      formData.value.image = defaultImageUrl;
+    }
+
+    // Si es una URL personalizada, validar que sea una URL válida
+    if (selectedImageOption.value === "custom" && customImageUrl.value) {
+      try {
+        new URL(customImageUrl.value);
+      } catch (e) {
+        alert("La URL de la imagen no es válida");
+        return;
+      }
+    }
+
+    // Formatear los datos antes de enviar
+    const dataToSubmit = {
+      titulo: formData.value.titulo?.trim() || "",
+      descripcion: formData.value.descripcion?.trim() || "",
+      textoBoton: formData.value.textoBoton?.trim() || "",
+      linkBoton: formData.value.linkBoton?.trim() || "",
+      image: formData.value.image,
+      fecha: new Date().toISOString(),
+    };
+
+    // Validar que si hay textoBoton también haya linkBoton
+    if (dataToSubmit.textoBoton && !dataToSubmit.linkBoton) {
+      alert("Si agregas un texto de botón, debes agregar también un enlace");
+      return;
+    }
+
+    emit("submit", dataToSubmit);
+  } catch (error: any) {
+    console.error("Error al procesar el formulario:", error);
+    alert(error.message || "Error al procesar el formulario");
+  }
 };
 </script>
 
 <template>
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 z-50 overflow-y-auto"
-  >
+  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen p-4">
       <div
         class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
@@ -136,9 +180,7 @@ const handleSubmit = () => {
         <!-- Modal header -->
         <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-t-lg">
           <div class="flex justify-between items-center">
-            <h3
-              class="text-lg font-semibold text-gray-900 dark:text-gray-100"
-            >
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {{ isEdit ? "Editar Anuncio" : "Nuevo Anuncio" }}
             </h3>
             <button
@@ -341,4 +383,4 @@ body.modal-open {
     min-height: -webkit-fill-available;
   }
 }
-</style> 
+</style>

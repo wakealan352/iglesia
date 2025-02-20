@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { auth } from "../../lib/api";
+import { auth_api } from "../../lib/api";
 
 const username = ref("");
 const password = ref("");
@@ -13,9 +13,9 @@ const intentosFallidos = ref(0);
 const bloqueado = ref(false);
 const tiempoRestante = ref(0);
 const bloqueosPrevios = ref(0);
-let temporizador: number | null = null;
+let temporizador: ReturnType<typeof setInterval> | null = null;
 
-const emit = defineEmits(['login-success', 'close']);
+const emit = defineEmits(["login-success", "close"]);
 
 const calcularTiempoBloqueo = (): number => {
   // Tiempo base de 30 segundos
@@ -26,27 +26,30 @@ const calcularTiempoBloqueo = (): number => {
 
 const sanitizarEntrada = (texto: string): string => {
   // Eliminar espacios en blanco al inicio y final
-  return texto.trim()
-    // Escapar caracteres especiales HTML
-    .replace(/[&<>"']/g, (match) => {
-      const escape: { [key: string]: string } = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      };
-      return escape[match];
-    })
-    // Prevenir inyección de SQL básica
-    .replace(/[;{}()\\]/g, '');
+  return (
+    texto
+      .trim()
+      // Escapar caracteres especiales HTML
+      .replace(/[&<>"']/g, (match) => {
+        const escape: { [key: string]: string } = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        };
+        return escape[match];
+      })
+      // Prevenir inyección de SQL básica
+      .replace(/[;{}()\\]/g, "")
+  );
 };
 
 const iniciarBloqueo = () => {
   bloqueado.value = true;
   bloqueosPrevios.value++;
   tiempoRestante.value = calcularTiempoBloqueo();
-  
+
   temporizador = setInterval(() => {
     tiempoRestante.value--;
     if (tiempoRestante.value <= 0) {
@@ -59,12 +62,12 @@ const iniciarBloqueo = () => {
 
 const openModal = () => {
   isOpen.value = true;
-  document.body.style.overflow = 'hidden'; // Deshabilitar scroll
+  document.body.style.overflow = "hidden"; // Deshabilitar scroll
 };
 
 const closeModal = () => {
   isOpen.value = false;
-  document.body.style.overflow = ''; // Restaurar scroll
+  document.body.style.overflow = ""; // Restaurar scroll
   // Limpiar el formulario y estado
   username.value = "";
   password.value = "";
@@ -75,16 +78,17 @@ const closeModal = () => {
   bloqueado.value = false;
   // No reiniciamos bloqueosPrevios para mantener el historial
   if (temporizador) clearInterval(temporizador);
-  emit('close');
+  emit("close");
 };
 
 const handleSubmit = async () => {
   if (bloqueado.value) {
     const minutos = Math.floor(tiempoRestante.value / 60);
     const segundos = tiempoRestante.value % 60;
-    const tiempoFormateado = minutos > 0 
-      ? `${minutos} minutos y ${segundos} segundos`
-      : `${segundos} segundos`;
+    const tiempoFormateado =
+      minutos > 0
+        ? `${minutos} minutos y ${segundos} segundos`
+        : `${segundos} segundos`;
     error.value = `Formulario bloqueado. Espere ${tiempoFormateado}.`;
     return;
   }
@@ -97,7 +101,7 @@ const handleSubmit = async () => {
     const usuarioSanitizado = sanitizarEntrada(username.value);
     const passwordSanitizada = sanitizarEntrada(password.value);
 
-    const response = await auth.login({
+    const response = await auth_api.login({
       username: usuarioSanitizado,
       password: passwordSanitizada,
     });
@@ -115,30 +119,60 @@ const handleSubmit = async () => {
       }, i * stepDuration);
     }
 
+    // Almacenar el token de Firebase
     localStorage.setItem("token", response.data.token);
 
     setTimeout(() => {
-      emit('login-success', response.data);
+      emit("login-success", response.data);
       closeModal();
     }, 1000);
   } catch (err: any) {
     intentosFallidos.value++;
-    
+
+    // Manejar errores específicos de Firebase
+    let mensajeError = "Error al iniciar sesión";
+
+    if (err?.code) {
+      switch (err.code) {
+        case "auth/invalid-email":
+          mensajeError = "El correo electrónico no es válido";
+          break;
+        case "auth/user-disabled":
+          mensajeError = "Esta cuenta ha sido deshabilitada";
+          break;
+        case "auth/user-not-found":
+          mensajeError = "No existe una cuenta con este correo";
+          break;
+        case "auth/wrong-password":
+          mensajeError = "Contraseña incorrecta";
+          break;
+        case "auth/too-many-requests":
+          mensajeError =
+            "Demasiados intentos fallidos. Por favor, intente más tarde";
+          break;
+        case "auth/network-request-failed":
+          mensajeError = "Error de conexión. Verifique su conexión a internet";
+          break;
+      }
+    }
+
     if (intentosFallidos.value >= 3) {
       const tiempoProximo = calcularTiempoBloqueo();
       const minutos = Math.floor(tiempoProximo / 60);
       const segundos = tiempoProximo % 60;
-      const tiempoFormateado = minutos > 0 
-        ? `${minutos} minutos y ${segundos} segundos`
-        : `${segundos} segundos`;
+      const tiempoFormateado =
+        minutos > 0
+          ? `${minutos} minutos y ${segundos} segundos`
+          : `${segundos} segundos`;
       error.value = `Demasiados intentos fallidos. El formulario se bloqueará por ${tiempoFormateado}.`;
       iniciarBloqueo();
     } else {
-      error.value = err.response?.data?.mensaje || "Error al iniciar sesión";
+      error.value = mensajeError;
     }
-    
+
     isSuccess.value = false;
     progress.value = 0;
+    console.error("Error de autenticación:", err);
   } finally {
     isLoading.value = false;
   }
@@ -149,25 +183,48 @@ defineExpose({ openModal, closeModal });
 
 <template>
   <!-- Overlay del modal -->
-  <div v-if="isOpen" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 flex items-center justify-center">
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 flex items-center justify-center"
+  >
     <!-- Modal -->
-    <div class="relative bg-white dark:bg-gray-800/90 backdrop-blur-md rounded-lg shadow-xl max-w-md w-full m-4 border border-white/20 animate__animated animate__fadeInDown">
+    <div
+      class="relative bg-white dark:bg-gray-800/90 backdrop-blur-md rounded-lg shadow-xl max-w-md w-full m-4 border border-white/20 animate__animated animate__fadeInDown"
+    >
       <!-- Header con título y botón de cerrar -->
-      <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Iniciar Sesión</h2>
-        <button 
+      <div
+        class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700"
+      >
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+          Iniciar Sesión
+        </h2>
+        <button
           @click="closeModal"
           class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
 
       <form @submit.prevent="handleSubmit" class="p-6 pt-4">
         <div class="mb-4">
-          <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="username">
+          <label
+            class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+            for="username"
+          >
             Usuario
           </label>
           <input
@@ -180,7 +237,10 @@ defineExpose({ openModal, closeModal });
         </div>
 
         <div class="mb-6">
-          <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="password">
+          <label
+            class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+            for="password"
+          >
             Contraseña
           </label>
           <input
@@ -204,7 +264,9 @@ defineExpose({ openModal, closeModal });
           <button
             type="submit"
             class="w-full font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-colors duration-300 relative text-white"
-            :class="[isSuccess ? 'text-white' : 'bg-teal-500 hover:bg-teal-600']"
+            :class="[
+              isSuccess ? 'text-white' : 'bg-teal-500 hover:bg-teal-600',
+            ]"
             :disabled="isLoading || isSuccess"
           >
             <div class="relative z-10">

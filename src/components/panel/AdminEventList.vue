@@ -3,18 +3,52 @@ import { ref, onMounted, watch } from "vue";
 import { eventos } from "../../lib/api.ts";
 import EventoModal from "./modals/EventoModal.vue";
 
-const eventList = ref([]);
+interface EventoAPI {
+  id: string;
+  titulo?: string;
+  descripcion?: string;
+  textoBoton?: string;
+  linkBoton?: string;
+  image?: string;
+  fecha?: string;
+}
+
+interface Evento {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  textoBoton?: string;
+  linkBoton?: string;
+  image?: string;
+  fecha?: string;
+}
+
+const eventList = ref<Evento[]>([]);
 const error = ref("");
 const formMode = ref<"closed" | "create" | "edit">("closed");
-const editingEvent = ref(null);
+const editingEvent = ref<Evento | null>(null);
 const isLoading = ref(false);
 
 const loadEvents = async () => {
   try {
     isLoading.value = true;
     const response = await eventos.getAll();
-    // Ordenar los eventos por ID en orden descendente
-    eventList.value = response.data.sort((a, b) => b.id - a.id);
+    // Ordenar los eventos por fecha en orden descendente
+    eventList.value = (response.data as EventoAPI[])
+      .map((item) => ({
+        id: item.id,
+        titulo: item.titulo || "",
+        descripcion: item.descripcion || "",
+        textoBoton: item.textoBoton,
+        linkBoton: item.linkBoton,
+        image: item.image,
+        fecha: item.fecha,
+      }))
+      .sort((a, b) => {
+        const fechaA = a.fecha ? new Date(a.fecha).getTime() : 0;
+        const fechaB = b.fecha ? new Date(b.fecha).getTime() : 0;
+        return fechaB - fechaA;
+      });
   } catch (err) {
     error.value = "Error al cargar los eventos";
   } finally {
@@ -108,19 +142,36 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6 mt-24">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-0">
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-0"
+    >
       <div>
-        <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent">
+        <h2
+          class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-400 bg-clip-text text-transparent"
+        >
           Administrar Anuncios
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona los anuncios y eventos especiales</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Gestiona los anuncios y eventos especiales
+        </p>
       </div>
       <button
         @click="formMode = 'create'"
         class="w-full sm:w-auto px-6 py-2.5 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-md flex items-center justify-center gap-2 text-sm font-medium bg-gradient-to-r from-teal-600 to-teal-500 text-white hover:from-teal-700 hover:to-teal-600"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
         </svg>
         Nuevo Anuncio
       </button>
@@ -161,7 +212,9 @@ onMounted(() => {
       @cancel="closeForm"
     />
 
-    <div v-if="isLoading" class="text-center py-4">Cargando anuncios...</div>
+    <div v-if="isLoading" class="text-center py-4 dark:text-white">
+      Cargando anuncios...
+    </div>
 
     <div v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
       <div
@@ -184,7 +237,9 @@ onMounted(() => {
             <div
               class="absolute inset-0 bg-black bg-opacity-50 rounded-md flex flex-col justify-center p-4 text-white"
             >
-              <h3 class="sm:text-xl text-[16px] font-bold mb-1">{{ evento.titulo }}</h3>
+              <h3 class="sm:text-xl text-[16px] font-bold mb-1">
+                {{ evento.titulo }}
+              </h3>
               <p class="text-sm mb-2">{{ evento.descripcion }}</p>
               <div v-if="evento.textoBoton || evento.linkBoton" class="text-sm">
                 <a

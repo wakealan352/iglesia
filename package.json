@@ -15,6 +15,7 @@
     "animate.css": "^4.1.1",
     "astro": "^4.11.5",
     "axios": "^1.7.9",
+    "firebase": "^11.3.1",
     "jwt-decode": "^4.0.0",
     "swiper": "^11.1.5",
     "tailwindcss": "^3.4.6",

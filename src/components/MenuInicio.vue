@@ -34,7 +34,9 @@
       <div class="hidden lg:flex items-center justify-between flex-grow">
         <div class="relative p-[2px] rounded-lg mx-auto">
           <div class="bg-gray-800 md:bg-transparent rounded-lg">
-            <ul class="flex font-medium space-x-8 rtl:space-x-reverse nav-menu px-4 py-2">
+            <ul
+              class="flex font-medium space-x-8 rtl:space-x-reverse nav-menu px-4 py-2"
+            >
               <li>
                 <a
                   href="/#inicio"
@@ -221,9 +223,11 @@
   <div
     v-show="isMenuOpen"
     class="fixed top-[72px] left-0 right-0 z-40 animate__animated lg:hidden p-4 bg-gray-800"
-    :class="{ 'animate__slideInDown': isMenuOpen }"
+    :class="{ animate__slideInDown: isMenuOpen }"
   >
-    <div class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gray-100 dark:bg-gradient-to-r dark:from-teal-500 dark:to-blue-500 dark:animate-gradient">
+    <div
+      class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gray-100 dark:bg-gradient-to-r dark:from-teal-500 dark:to-blue-500 dark:animate-gradient"
+    >
       <div class="bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-lg">
         <div class="container mx-auto px-4 py-4">
           <ul class="space-y-4 nav-menu">
@@ -249,7 +253,7 @@
   <BarraProgreso />
 
   <!-- Login Form -->
-  <LoginForm ref="loginForm" @login-success="handleLoginSuccess" />
+  <LoginForm ref="loginFormRef" @login-success="handleLoginSuccess" />
 </template>
 
 <script>
@@ -257,7 +261,7 @@ import BarraProgreso from "./BarraProgreso.vue";
 import AdminSidebar from "./AdminSidebar.vue";
 import LoginForm from "./panel/LoginForm.vue";
 import { checkAuth } from "../middleware/auth";
-import 'animate.css';
+import "animate.css";
 
 export default {
   components: {
@@ -270,34 +274,34 @@ export default {
     return {
       adminMenuVisible: false,
       isAuthenticated: false,
-      activeSection: '',
-      currentPath: '',
+      activeSection: "",
+      currentPath: "",
       isMenuOpen: false,
       menuItems: [
-        { href: '/#inicio', text: 'Inicio' },
-        { href: '/#anuncios', text: 'Anuncios y Eventos' },
-        { href: '/#pastor', text: 'Pastor' },
-        { href: '/#servicio', text: 'Servicios' },
-        { href: '/#ministerios', text: 'Ministerios' },
-        { href: '/confesion', text: 'Confesión de fe' },
-        { href: '/preguntas', text: 'Preguntas frecuentes' }
-      ]
+        { href: "/#inicio", text: "Inicio" },
+        { href: "/#anuncios", text: "Anuncios y Eventos" },
+        { href: "/#pastor", text: "Pastor" },
+        { href: "/#servicio", text: "Servicios" },
+        { href: "/#ministerios", text: "Ministerios" },
+        { href: "/confesion", text: "Confesión de fe" },
+        { href: "/preguntas", text: "Preguntas frecuentes" },
+      ],
     };
   },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
       if (this.isMenuOpen) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
       } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       }
     },
     closeMenu() {
       this.isMenuOpen = false;
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
       this.$nextTick(() => {
-        if (this.currentPath === '/') {
+        if (this.currentPath === "/") {
           this.handleScroll();
         }
         this.updateActiveLink();
@@ -310,8 +314,10 @@ export default {
     },
     loadDarkModePreference() {
       const darkMode = localStorage.getItem("darkMode");
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+
       if (darkMode === "true" || (!darkMode && prefersDark)) {
         document.documentElement.classList.add("dark");
       } else {
@@ -338,29 +344,38 @@ export default {
       this.isAuthenticated = checkAuth();
     },
     handleScroll() {
-      if (this.currentPath === '/') {
-        const sections = ['inicio', 'anuncios', 'pastor', 'servicio', 'ministerios'];
+      if (this.currentPath === "/") {
+        const sections = [
+          "inicio",
+          "anuncios",
+          "pastor",
+          "servicio",
+          "ministerios",
+        ];
         const navLinks = document.querySelectorAll('.nav-menu a[href^="/#"]');
-        
+
         const scrollPosition = window.scrollY + 100;
 
-        sections.forEach(sectionId => {
+        sections.forEach((sectionId) => {
           const section = document.getElementById(sectionId);
           if (section) {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.offsetHeight;
 
-            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            if (
+              scrollPosition >= sectionTop &&
+              scrollPosition < sectionTop + sectionHeight
+            ) {
               this.activeSection = sectionId;
-              
-              navLinks.forEach(link => {
-                const href = link.getAttribute('href').substring(2);
+
+              navLinks.forEach((link) => {
+                const href = link.getAttribute("href").substring(2);
                 if (href === sectionId) {
-                  link.classList.add('text-teal-400');
-                  link.classList.remove('text-white');
+                  link.classList.add("text-teal-400");
+                  link.classList.remove("text-white");
                 } else {
-                  link.classList.remove('text-teal-400');
-                  link.classList.add('text-white');
+                  link.classList.remove("text-teal-400");
+                  link.classList.add("text-white");
                 }
               });
             }
@@ -369,16 +384,19 @@ export default {
       }
     },
     updateActiveLink() {
-      const allLinks = document.querySelectorAll('.nav-menu a');
-      
-      allLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href === this.currentPath || (this.currentPath === '/' && href === '/')) {
-          link.classList.add('text-teal-400');
-          link.classList.remove('text-white');
-        } else if (!href.startsWith('/#')) {
-          link.classList.remove('text-teal-400');
-          link.classList.add('text-white');
+      const allLinks = document.querySelectorAll(".nav-menu a");
+
+      allLinks.forEach((link) => {
+        const href = link.getAttribute("href");
+        if (
+          href === this.currentPath ||
+          (this.currentPath === "/" && href === "/")
+        ) {
+          link.classList.add("text-teal-400");
+          link.classList.remove("text-white");
+        } else if (!href.startsWith("/#")) {
+          link.classList.remove("text-teal-400");
+          link.classList.add("text-white");
         }
       });
     },
@@ -388,32 +406,44 @@ export default {
     },
     handleLoginSuccess(data) {
       this.checkAuthStatus();
+      this.closeMenu(); // Cerrar el menú móvil si está abierto
     },
     openLoginModal() {
-      this.$refs.loginForm.openModal();
+      if (this.$refs.loginFormRef) {
+        this.$refs.loginFormRef.openModal();
+      } else {
+        console.error(
+          "No se pudo encontrar la referencia al formulario de login"
+        );
+      }
     },
   },
   mounted() {
     this.loadDarkModePreference();
     this.checkAuthStatus();
     document.addEventListener("click", this.handleDocumentClick);
-    
+
     this.updateCurrentPath();
-    
-    if (this.currentPath === '/') {
-      window.addEventListener('scroll', this.handleScroll);
+
+    if (this.currentPath === "/") {
+      window.addEventListener("scroll", this.handleScroll);
       this.$nextTick(() => {
         this.handleScroll();
       });
     }
 
-    window.addEventListener('popstate', this.updateCurrentPath);
+    window.addEventListener("popstate", this.updateCurrentPath);
+
+    // Verificar que el componente LoginForm esté disponible
+    if (!this.$refs.loginFormRef) {
+      console.warn("LoginForm no está disponible en el montaje inicial");
+    }
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleDocumentClick);
-    window.removeEventListener('scroll', this.handleScroll);
-    window.removeEventListener('popstate', this.updateCurrentPath);
-    document.body.style.overflow = '';
+    window.removeEventListener("scroll", this.handleScroll);
+    window.removeEventListener("popstate", this.updateCurrentPath);
+    document.body.style.overflow = "";
   },
 };
 </script>
@@ -458,7 +488,8 @@ export default {
 }
 
 :root * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Aseguramos que el contenido se empuje hacia abajo por la altura de la barra de navegación fija */
