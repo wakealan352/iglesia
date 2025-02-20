@@ -346,23 +346,27 @@ export default {
               const fechaEvento = new Date(evento.fecha);
               return fechaEvento >= hoy && fechaEvento <= finPeriodo;
             })
-            .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
-            .reduce((acc, evento) => {
-              const index = acc.findIndex(
-                (e) =>
-                  new Date(e.fecha).getTime() ===
-                  new Date(evento.fecha).getTime()
-              );
-              if (index === -1) {
-                acc.push(evento);
-              } else if (
-                !acc[index].infoAdicional ||
-                evento.modificarServicioDominical
-              ) {
-                acc[index] = { ...acc[index], ...evento };
-              }
-              return acc;
-            }, []);
+            .sort((a, b) => {
+              // Primero ordenamos por fecha
+              const fechaComparacion =
+                new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+              if (fechaComparacion !== 0) return fechaComparacion;
+
+              // Si las fechas son iguales, los servicios dominicales van primero
+              if (
+                a.titulo === "Servicio dominical" &&
+                b.titulo !== "Servicio dominical"
+              )
+                return -1;
+              if (
+                a.titulo !== "Servicio dominical" &&
+                b.titulo === "Servicio dominical"
+              )
+                return 1;
+
+              // Si ninguno es servicio dominical o ambos lo son, ordenar por hora
+              return a.hora.localeCompare(b.hora);
+            });
 
           // Calculamos los días restantes
           eventos.value.forEach((evento) => {
