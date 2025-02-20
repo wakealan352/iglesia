@@ -22,10 +22,10 @@ const loadUserName = async () => {
     if (user) {
       const db = getFirestore();
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        userName.value = userDoc.data().displayName || user.displayName || "";
-      } else {
-        userName.value = user.displayName || "";
+      if (userDoc.exists() && userDoc.data().displayName) {
+        userName.value = userDoc.data().displayName;
+      } else if (user.displayName) {
+        userName.value = user.displayName;
       }
     }
   } catch (error) {
@@ -38,28 +38,36 @@ onMounted(async () => {
     const auth = getAuth();
     const user = auth.currentUser;
 
+    // Obtener el nombre del usuario antes de cerrar sesión
     if (user) {
-      // Obtener y guardar el nombre del usuario antes de cerrar sesión
-      const db = getFirestore();
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const displayName = userDoc.exists()
-        ? userDoc.data().displayName || user.displayName || ""
-        : user.displayName || "";
+      try {
+        const db = getFirestore();
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        let displayName = "";
 
-      // Guardar el nombre en localStorage
-      if (displayName) {
-        localStorage.setItem("userName", displayName);
+        if (userDoc.exists() && userDoc.data().displayName) {
+          displayName = userDoc.data().displayName;
+        } else if (user.displayName) {
+          displayName = user.displayName;
+        }
+
+        if (displayName) {
+          localStorage.setItem("userName", displayName);
+        }
+      } catch (error) {
+        console.error("Error al obtener el nombre del usuario:", error);
       }
-
-      // Cerrar sesión
-      await signOut(auth);
     }
 
-    // Cargar el nombre del usuario (ahora desde localStorage)
-    await loadUserName();
-
-    // Eliminar el token
+    // Limpiar datos de sesión
     localStorage.removeItem("token");
+    sessionStorage.clear();
+
+    // Cerrar sesión en Firebase
+    await signOut(auth);
+
+    // Cargar el nombre del usuario (desde localStorage)
+    await loadUserName();
 
     // Iniciar la cuenta regresiva
     redirecting.value = true;
@@ -67,13 +75,16 @@ onMounted(async () => {
       countdown.value--;
       if (countdown.value <= 0) {
         clearInterval(timer);
-        // Limpiar el nombre de usuario al finalizar
-        localStorage.removeItem("userName");
+        // Limpiar todos los datos locales
+        localStorage.clear();
         window.location.href = "/";
       }
     }, 1000);
   } catch (error) {
     console.error("Error durante el proceso de logout:", error);
+    // En caso de error, forzar la limpieza y redirección
+    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = "/";
   }
 });
