@@ -648,7 +648,14 @@ export default {
       }
     },
     formatDate(date) {
-      return new Date(date).toLocaleDateString();
+      // Crear la fecha en la zona horaria de Bogotá
+      const fechaBogota = new Date(date + "T00:00:00-05:00");
+      return fechaBogota.toLocaleDateString("es-CO", {
+        timeZone: "America/Bogota",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
     },
     getColorClass(value) {
       const iconOptions = [
@@ -664,28 +671,39 @@ export default {
       return option ? option.colorClass : "";
     },
     getDiasRestantes(fecha) {
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const fechaEvento = new Date(fecha);
+      // Obtener fecha actual en Bogotá
+      const hoyBogota = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+      );
+      hoyBogota.setHours(0, 0, 0, 0);
+
+      // Convertir la fecha del evento a la zona horaria de Bogotá
+      const fechaEvento = new Date(fecha + "T00:00:00-05:00");
       fechaEvento.setHours(0, 0, 0, 0);
 
-      const diferencia = fechaEvento - hoy;
-      const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+      const diferencia = fechaEvento.getTime() - hoyBogota.getTime();
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
 
-      if (dias < 0) return "Evento pasado";
-      if (dias === 0) return "Hoy";
+      if (diferencia < 0) return "Evento pasado";
+      if (diferencia === 0 || dias === 0) return "Hoy";
       if (dias === 1) return "Mañana";
       return `${dias} días`;
     },
     getDiasRestantesClass(fecha) {
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const fechaEvento = new Date(fecha);
+      // Obtener fecha actual en Bogotá
+      const hoyBogota = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "America/Bogota" })
+      );
+      hoyBogota.setHours(0, 0, 0, 0);
+
+      // Convertir la fecha del evento a la zona horaria de Bogotá
+      const fechaEvento = new Date(fecha + "T00:00:00-05:00");
       fechaEvento.setHours(0, 0, 0, 0);
 
-      const dias = Math.ceil((fechaEvento - hoy) / (1000 * 60 * 60 * 24));
+      const diferencia = fechaEvento.getTime() - hoyBogota.getTime();
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
 
-      if (dias < 0) return "text-gray-500 dark:text-gray-400";
+      if (diferencia < 0) return "text-gray-500 dark:text-gray-400";
       if (dias <= 7) return "text-red-600 dark:text-red-400 font-semibold";
       if (dias <= 30) return "text-yellow-600 dark:text-yellow-400";
       return "text-green-600 dark:text-green-400";
