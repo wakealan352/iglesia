@@ -27,11 +27,10 @@ const eventList = ref<Evento[]>([]);
 const error = ref("");
 const formMode = ref<"closed" | "create" | "edit">("closed");
 const editingEvent = ref<Evento | null>(null);
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 const loadEvents = async () => {
   try {
-    isLoading.value = true;
     const response = await eventos.getAll();
     // Ordenar los eventos por fecha en orden descendente
     eventList.value = (response.data as EventoAPI[])
