@@ -188,7 +188,7 @@ import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import CambioContrasena from "./CambioContrasena.vue";
 import ProfileModal from "./ProfileModal.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, getDoc, doc, onSnapshot } from "firebase/firestore";
+import { getUserProfile, subscribeToUserProfile } from "../lib/userService";
 
 const props = defineProps({
   isOpen: {
@@ -261,14 +261,8 @@ const loadUserProfile = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
-      const db = getFirestore();
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        displayName.value =
-          userDoc.data().displayName || user.displayName || "";
-      } else {
-        displayName.value = user.displayName || "";
-      }
+      const profile = await getUserProfile(user.uid);
+      displayName.value = profile.displayName;
     }
   } catch (error) {
     console.error("Error al cargar el perfil:", error);
@@ -289,22 +283,10 @@ onMounted(async () => {
       // Cargar el perfil inicial
       loadUserProfile();
 
-      // Configurar el listener en tiempo real para Firestore
-      const db = getFirestore();
-      unsubscribeUser = onSnapshot(
-        doc(db, "users", user.uid),
-        (doc) => {
-          if (doc.exists()) {
-            displayName.value =
-              doc.data().displayName || user.displayName || "";
-          } else {
-            displayName.value = user.displayName || "";
-          }
-        },
-        (error) => {
-          console.error("Error al escuchar cambios del perfil:", error);
-        }
-      );
+      // Configurar el listener en tiempo real
+      unsubscribeUser = subscribeToUserProfile(user.uid, (profile) => {
+        displayName.value = profile.displayName;
+      });
     }
   });
 });
