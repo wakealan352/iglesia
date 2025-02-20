@@ -1,73 +1,31 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { getAuth, signOut } from "firebase/auth";
-import { getFirestore, getDoc, doc } from "firebase/firestore";
+import { auth } from "../lib/firebase";
 
 const countdown = ref(10);
 const redirecting = ref(false);
-const userName = ref("");
 
-const loadUserName = async () => {
+const clearAuthState = () => {
+  // Limpiar todo el estado de autenticación
+  localStorage.removeItem("token");
+  sessionStorage.clear();
+
+  // Limpiar cualquier otra información de usuario que puedas tener almacenada
   try {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    // Intentar obtener el nombre del localStorage primero
-    const storedName = localStorage.getItem("userName");
-    if (storedName) {
-      userName.value = storedName;
-      return;
-    }
-
-    if (user) {
-      const db = getFirestore();
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists() && userDoc.data().displayName) {
-        userName.value = userDoc.data().displayName;
-      } else if (user.displayName) {
-        userName.value = user.displayName;
-      }
-    }
-  } catch (error) {
-    console.error("Error al cargar el nombre del usuario:", error);
+    indexedDB.deleteDatabase("firebaseLocalStorageDb");
+  } catch (e) {
+    console.error("Error al limpiar IndexedDB:", e);
   }
 };
 
 onMounted(async () => {
   try {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    // Obtener el nombre del usuario antes de cerrar sesión
-    if (user) {
-      try {
-        const db = getFirestore();
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        let displayName = "";
-
-        if (userDoc.exists() && userDoc.data().displayName) {
-          displayName = userDoc.data().displayName;
-        } else if (user.displayName) {
-          displayName = user.displayName;
-        }
-
-        if (displayName) {
-          localStorage.setItem("userName", displayName);
-        }
-      } catch (error) {
-        console.error("Error al obtener el nombre del usuario:", error);
-      }
-    }
-
-    // Limpiar datos de sesión
-    localStorage.removeItem("token");
-    sessionStorage.clear();
-
-    // Cerrar sesión en Firebase
+    // Cerrar sesión en Firebase usando la instancia singleton
     await signOut(auth);
 
-    // Cargar el nombre del usuario (desde localStorage)
-    await loadUserName();
+    // Limpiar estado de autenticación
+    clearAuthState();
 
     // Iniciar la cuenta regresiva
     redirecting.value = true;
@@ -75,17 +33,15 @@ onMounted(async () => {
       countdown.value--;
       if (countdown.value <= 0) {
         clearInterval(timer);
-        // Limpiar todos los datos locales
-        localStorage.clear();
-        window.location.href = "/";
+        // Forzar recarga completa para limpiar el estado de la aplicación
+        window.location.replace("/");
       }
     }, 1000);
   } catch (error) {
-    console.error("Error durante el proceso de logout:", error);
-    // En caso de error, forzar la limpieza y redirección
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = "/";
+    console.error("Error al cerrar sesión:", error);
+    // En caso de error, limpiar el estado de todas formas y redirigir
+    clearAuthState();
+    window.location.replace("/");
   }
 });
 </script>
@@ -106,8 +62,7 @@ onMounted(async () => {
 
       <!-- Mensaje de desconexión -->
       <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-        ¡Hasta pronto<span v-if="userName">, {{ userName }}</span
-        >!
+        ¡Hasta pronto!
       </h2>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         Has cerrado sesión correctamente
