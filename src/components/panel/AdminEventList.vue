@@ -352,7 +352,7 @@ onMounted(() => {
               v-if="evento.createdBy && userProfiles[evento.createdBy]"
               class="flex items-center"
             >
-              <span class="font-medium mr-1">Creado por:</span>
+              <span class="font-medium mr-1">Agregado por:</span>
               <span class="text-teal-600 dark:text-teal-400">{{
                 userProfiles[evento.createdBy].displayName
               }}</span>

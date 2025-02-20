@@ -31,6 +31,19 @@ export interface UserWithId extends UserProfile {
   id: string;
 }
 
+export interface Fecha {
+  id: string;
+  titulo: string;
+  fecha: string;
+  hora: string;
+  lugar: string;
+  banner?: string;
+  infoIconoTexto?: string;
+  infoAdiccional?: string;
+  createdBy: string;
+  updatedBy?: string;
+}
+
 // Función para verificar autenticación
 const checkAuth = () => {
   if (!auth.currentUser) {
@@ -256,15 +269,28 @@ export const fechas = {
       const fechasRef = collection(db, "fechas");
       const q = query(fechasRef, orderBy("fecha", "asc"));
       const snapshot = await getDocs(q);
+
+      // Obtener todos los usuarios para mapear IDs a nombres
+      const usersRef = collection(db, "users");
+      const usersSnapshot = await getDocs(usersRef);
+      const users = new Map();
+      usersSnapshot.docs.forEach((doc) => {
+        users.set(doc.id, doc.data().displayName || doc.data().email);
+      });
+
       return {
         data: snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
+          createdBy: users.get(doc.data().createdBy) || "Usuario desconocido",
+          updatedBy: doc.data().updatedBy
+            ? users.get(doc.data().updatedBy) || "Usuario desconocido"
+            : undefined,
         })),
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al obtener fechas:", error);
-      throw new Error("Error al cargar las fechas: " + error.message);
+      throw new Error("Error al cargar las fechas");
     }
   },
   getById: async (id: string) => {
@@ -288,7 +314,6 @@ export const fechas = {
   create: async (data: any) => {
     try {
       checkAuth();
-
       const fechaData = {
         ...data,
         createdAt: serverTimestamp(),
@@ -304,61 +329,45 @@ export const fechas = {
           ...fechaData,
         },
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al crear fecha:", error);
-      throw new Error(error.message || "Error al crear la fecha");
+      throw new Error("Error al crear la fecha");
     }
   },
   update: async (id: string, data: any) => {
     try {
       checkAuth();
-
       const docRef = doc(db, "fechas", id);
-      const docSnap = await getDoc(docRef);
-
-      if (!docSnap.exists()) {
-        throw new Error("La fecha no existe");
-      }
-
-      const updateData = {
+      const fechaData = {
         ...data,
         updatedAt: serverTimestamp(),
         updatedBy: auth.currentUser!.uid,
       };
 
-      await updateDoc(docRef, updateData);
+      await updateDoc(docRef, fechaData);
 
       return {
         data: {
           id,
-          ...updateData,
+          ...fechaData,
         },
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al actualizar fecha:", error);
-      throw new Error(error.message || "Error al actualizar la fecha");
+      throw new Error("Error al actualizar la fecha");
     }
   },
   delete: async (id: string) => {
     try {
       checkAuth();
-
-      const docRef = doc(db, "fechas", id);
-      const docSnap = await getDoc(docRef);
-
-      if (!docSnap.exists()) {
-        throw new Error("La fecha no existe");
-      }
-
-      await deleteDoc(docRef);
-
+      await deleteDoc(doc(db, "fechas", id));
       return {
         data: { id },
         mensaje: "Fecha eliminada exitosamente",
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al eliminar fecha:", error);
-      throw new Error(error.message || "Error al eliminar la fecha");
+      throw new Error("Error al eliminar la fecha");
     }
   },
 };

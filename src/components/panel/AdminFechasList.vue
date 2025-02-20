@@ -182,6 +182,16 @@
               Días
             </th>
             <th
+              class="hidden lg:table-cell px-3 md:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            >
+              Agregado por
+            </th>
+            <th
+              class="hidden lg:table-cell px-3 md:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            >
+              Modificado por
+            </th>
+            <th
               class="px-3 md:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
             >
               Acciones
@@ -262,6 +272,16 @@
               <span :class="getDiasRestantesClass(fecha.fecha)">
                 {{ getDiasRestantes(fecha.fecha) }}
               </span>
+            </td>
+            <td
+              class="hidden lg:table-cell px-3 md:px-4 lg:px-6 py-4 text-sm text-gray-600 dark:text-gray-300"
+            >
+              {{ fecha.createdBy }}
+            </td>
+            <td
+              class="hidden lg:table-cell px-3 md:px-4 lg:px-6 py-4 text-sm text-gray-600 dark:text-gray-300"
+            >
+              {{ fecha.updatedBy || "-" }}
             </td>
             <td class="px-3 md:px-4 lg:px-6 py-4">
               <div class="flex space-x-2">
@@ -476,6 +496,12 @@
                             class="w-2.5 h-2.5"
                           />
                         </span>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                          <div>Agregado por: {{ fecha.createdBy }}</div>
+                          <div v-if="fecha.updatedBy">
+                            Modificado por: {{ fecha.updatedBy }}
+                          </div>
+                        </div>
                       </div>
                       <!-- Indicadores de deslizamiento -->
                       <div class="flex items-center space-x-4">
