@@ -103,15 +103,10 @@
       Cargando fechas...
     </div>
 
-    <div v-else-if="fechas.length === 0" class="text-center py-8">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-      <p class="text-xl font-semibold text-gray-600 dark:text-gray-400">No hay fechas disponibles</p>
-      <p class="text-gray-500 dark:text-gray-500 mt-2">Haz clic en "Nueva Fecha" para crear una.</p>
-    </div>
-
-    <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <div
+      v-else
+      class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden"
+    >
       <!-- Vista de tabla para tablet y desktop -->
       <table
         class="hidden md:table min-w-full divide-y divide-gray-200 dark:divide-gray-900 dark:text-white"
@@ -621,7 +616,11 @@ export default {
           await this.loadFechas();
         } catch (error) {
           console.error("Error al eliminar fecha:", error);
-          this.errorMessage = "Error al eliminar la fecha";
+          this.errorMessage = error.message || "Error al eliminar la fecha";
+          if (error.message.includes("No hay sesión activa")) {
+            this.errorMessage =
+              "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.";
+          }
         }
       }
     },
