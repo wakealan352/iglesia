@@ -250,6 +250,7 @@
                   :title="fecha.infoIconoTexto"
                 >
                   <img
+                    v-if="fecha.infoAdiccional === '1'"
                     :src="`/insignias/${getIconFileName(fecha.infoIconoTexto)}`"
                     :alt="fecha.infoIconoTexto"
                     class="w-4 h-4"
@@ -467,6 +468,7 @@
                           :title="fecha.infoIconoTexto"
                         >
                           <img
+                            v-if="fecha.infoAdiccional === '1'"
                             :src="`/insignias/${getIconFileName(
                               fecha.infoIconoTexto
                             )}`"

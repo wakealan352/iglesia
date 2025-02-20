@@ -170,7 +170,10 @@
                       :class="getColorClass(fechaForm.tipoIcono)"
                     >
                       <img
-                        v-if="fechaForm.tipoIcono"
+                        v-if="
+                          fechaForm.tipoIcono &&
+                          fechaForm.infoAdiccional === '1'
+                        "
                         :src="`/insignias/${getIconFileName(
                           fechaForm.tipoIcono
                         )}`"
@@ -178,13 +181,22 @@
                         class="w-4 h-4"
                       />
                     </span>
-                    {{ fechaForm.tipoIcono || "Seleccione una opción" }}
+                    {{
+                      fechaForm.infoAdiccional === "1"
+                        ? fechaForm.tipoIcono || "Seleccione una opción"
+                        : getColorName(fechaForm.tipoIcono) ||
+                          "Seleccione una opción"
+                    }}
                   </div>
                 </button>
                 <label
                   class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 left-1"
                 >
-                  Texto del Icono de Información
+                  {{
+                    fechaForm.infoAdiccional === "1"
+                      ? "Seleccionar Icono"
+                      : "Resaltar Color Fecha"
+                  }}
                 </label>
                 <div
                   v-if="showDropdown"
@@ -202,12 +214,17 @@
                         :class="option.colorClass"
                       >
                         <img
+                          v-if="fechaForm.infoAdiccional === '1'"
                           :src="`/insignias/${option.icon}`"
                           :alt="option.label"
                           class="w-4 h-4"
                         />
                       </span>
-                      {{ option.label }}
+                      {{
+                        fechaForm.infoAdiccional === "1"
+                          ? option.label
+                          : option.colorName
+                      }}
                     </div>
                   </div>
                 </div>
@@ -295,42 +312,49 @@ export default {
           label: "Canasta de amor",
           colorClass: "bg-red-500",
           icon: "canasta-de-amor.svg",
+          colorName: "Rojo",
         },
         {
           value: "Cena del Señor",
           label: "Cena del Señor",
           colorClass: "bg-red-700",
           icon: "cena-del-senor.svg",
+          colorName: "Rojo Oscuro",
         },
         {
           value: "Reunión de damas",
           label: "Reunión de damas",
           colorClass: "bg-pink-500",
           icon: "reunion-de-damas.svg",
+          colorName: "Rosa",
         },
         {
           value: "Reunión de varones",
           label: "Reunión de varones",
           colorClass: "bg-blue-500",
           icon: "reunion-de-varones.svg",
+          colorName: "Azul",
         },
         {
           value: "Reunión de jovenes",
           label: "Reunión de jovenes",
           colorClass: "bg-teal-500",
           icon: "reunion-de-jovenes.svg",
+          colorName: "Verde Azulado",
         },
         {
           value: "Domingo misionero",
           label: "Domingo misionero",
           colorClass: "bg-green-500",
           icon: "domingo-misionero.svg",
+          colorName: "Verde",
         },
         {
           value: "Culto de oración",
           label: "Culto de oración",
           colorClass: "bg-violet-500",
           icon: "culto-de-oracion.svg",
+          colorName: "Violeta",
         },
       ],
       fechaForm: {
@@ -404,6 +428,10 @@ export default {
         this.fechaForm.infoIconoTexto = option.value;
       }
       this.showDropdown = false;
+    },
+    getColorName(value) {
+      const option = this.iconOptions.find((opt) => opt.value === value);
+      return option ? option.colorName : "";
     },
     saveFecha() {
       // La fecha del formulario ya está en formato YYYY-MM-DD
