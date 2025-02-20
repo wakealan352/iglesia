@@ -247,12 +247,13 @@ const handleSubmit = async () => {
                 <select
                   v-model="selectedImageOption"
                   id="imagen"
-                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-500 peer"
+                  class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-500 peer dark:bg-gray-700"
                 >
                   <option
                     v-for="option in imageOptions"
                     :key="option.value"
                     :value="option.value"
+                    class="dark:bg-gray-700 dark:text-gray-300"
                   >
                     {{ option.label }}
                   </option>
