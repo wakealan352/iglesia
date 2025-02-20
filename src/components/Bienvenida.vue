@@ -13,7 +13,7 @@
       <div class="relative h-full flex items-center justify-center z-10">
         <div class="text-center text-white p-5 selection:bg-teal-500">
           <h1 class="text-4xl sm:text-5xl font-bold mb-4">
-            Bienvenido {{ displayName ? displayName : "a nuestra iglesia" }}
+            {{ saludo }} {{ displayName ? displayName : "a nuestra iglesia" }}
           </h1>
           <p class="text-xl sm:text-2xl">
             Un lugar de fe, comunidad y crecimiento espiritual
@@ -68,7 +68,17 @@ export default {
       displayName: "",
       unsubscribe: null,
       authUnsubscribe: null,
+      nombresFemeninos: ["Angie", "Ana", "Maria", "Laura", "Sofia", "Isabella"],
     };
+  },
+  computed: {
+    saludo() {
+      if (this.nombresFemeninos.includes(this.displayName)) {
+        return "Bienvenida";
+      } else {
+        return "Bienvenido";
+      }
+    },
   },
   methods: {
     handleScroll() {
