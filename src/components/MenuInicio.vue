@@ -302,14 +302,9 @@ export default {
   },
   methods: {
     toggleMenu() {
-      if (!this.isMenuOpen) {
-        this.isMenuOpen = true;
-        this.isClosing = false;
-        document.body.style.overflow = "hidden";
-      } else {
-        this.isClosing = true;
-        document.body.style.overflow = "";
-      }
+      this.isMenuOpen = !this.isMenuOpen;
+      this.isClosing = false;
+      document.body.style.overflow = this.isMenuOpen ? "hidden" : "";
     },
     closeMenu() {
       if (this.isMenuOpen) {
@@ -321,12 +316,6 @@ export default {
       if (this.isClosing) {
         this.isMenuOpen = false;
         this.isClosing = false;
-        this.$nextTick(() => {
-          if (this.currentPath === "/") {
-            this.handleScroll();
-          }
-          this.updateActiveLink();
-        });
       }
     },
     toggleDarkMode() {
@@ -524,39 +513,16 @@ export default {
 
 /* Estilos globales para la transición del modo oscuro */
 :root {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-:root * {
-  transition: background-color 0.3s ease, border-color 0.3s ease,
-    color 0.3s ease;
-}
-
-/* Aseguramos que el contenido se empuje hacia abajo por la altura de la barra de navegación fija */
-:root {
   --nav-height: 72px;
+  transition: background-color 0.3s ease;
 }
 
 body {
   padding-top: var(--nav-height);
 }
 
-/* Ajustes para la animación del menú móvil */
 .animate__animated {
   --animate-duration: 0.3s;
-}
-
-/* Animación del gradiente */
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 
 .dark .dark\:animate-gradient {
