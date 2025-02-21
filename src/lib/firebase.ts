@@ -12,17 +12,16 @@ const firebaseConfig = {
   appId: "1:366923103958:web:ef0d86dec0dd88f4359377",
 };
 
-// Inicializar Firebase
-let firebaseApp;
-try {
-  firebaseApp = initializeApp(firebaseConfig);
-} catch (error: any) {
-  if (!/already exists/.test(error.message)) {
-    console.error("Error al inicializar Firebase:", error.stack);
-  }
-  firebaseApp = initializeApp(firebaseConfig, "secondary");
-}
+// Inicializar Firebase solo en el cliente
+const { auth, db } =
+  typeof window !== "undefined"
+    ? (() => {
+        const app = initializeApp(firebaseConfig);
+        return {
+          auth: getAuth(app),
+          db: getFirestore(app),
+        };
+      })()
+    : { auth: null, db: null };
 
-// Exportar las instancias de Firebase
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
+export { auth, db };
