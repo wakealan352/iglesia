@@ -172,7 +172,7 @@ export const eventos = {
         image: data.image || "",
         fecha: data.fecha || new Date().toISOString(),
         createdAt: serverTimestamp(),
-        createdBy: auth.currentUser!.uid,
+        createdBy: auth.currentUser.uid,
       };
 
       // Validar que si hay textoBoton también haya linkBoton
@@ -216,7 +216,7 @@ export const eventos = {
         image: data.image || "",
         fecha: data.fecha || new Date().toISOString(),
         updatedAt: serverTimestamp(),
-        updatedBy: auth.currentUser!.uid,
+        updatedBy: auth.currentUser.uid,
       };
 
       // Validar que si hay textoBoton también haya linkBoton
@@ -317,7 +317,7 @@ export const fechas = {
       const fechaData = {
         ...data,
         createdAt: serverTimestamp(),
-        createdBy: auth.currentUser!.uid,
+        createdBy: auth.currentUser.uid,
       };
 
       const fechasRef = collection(db, "fechas");
@@ -341,7 +341,7 @@ export const fechas = {
       const fechaData = {
         ...data,
         updatedAt: serverTimestamp(),
-        updatedBy: auth.currentUser!.uid,
+        updatedBy: auth.currentUser.uid,
       };
 
       await updateDoc(docRef, fechaData);
@@ -396,7 +396,7 @@ export const auth_api = {
     newPassword: string;
   }) => {
     const user = auth.currentUser;
-    if (!user || !user.email) {
+    if (!user?.email) {
       throw new Error("Usuario no autenticado");
     }
 
@@ -417,13 +417,7 @@ export const auth_api = {
         },
       };
     } catch (error: any) {
-      throw {
-        response: {
-          data: {
-            mensaje: "Error al cambiar la contraseña",
-          },
-        },
-      };
+      throw new Error("Error al cambiar la contraseña");
     }
   },
 };
