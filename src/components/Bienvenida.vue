@@ -41,13 +41,11 @@
               ></path>
             </svg>
           </div>
-          <!-- Indicador para pantallas más grandes (bajar) -->
+          <!-- Indicador para pantallas más grandes (mouse) -->
           <div class="hidden sm:flex flex-col items-center">
             <span class="text-white text-sm mb-2">Bajar</span>
-            <div class="w-6 h-10 border-2 border-white rounded-full p-1">
-              <div
-                class="w-1 h-3 bg-white rounded-full animate-bounce mx-auto"
-              ></div>
+            <div class="mouse">
+              <div class="mouse-wheel"></div>
             </div>
           </div>
         </div>
@@ -148,15 +146,49 @@ export default {
 .overflow-hidden {
   overflow: hidden;
 }
+
 .scroll-indicator {
   display: flex;
   flex-direction: column;
   align-items: center;
   animation: fadeInOut 2s infinite;
 }
-@keyframes fadeInOut {
-  0%,
+
+/* Mouse container */
+.mouse {
+  width: 26px;
+  height: 40px;
+  border: 2px solid #fff;
+  border-radius: 20px;
+  position: relative;
+}
+
+/* Mouse wheel */
+.mouse-wheel {
+  width: 3px;
+  height: 8px;
+  background-color: #fff;
+  border-radius: 25%;
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: mouse-wheel 2s ease infinite;
+}
+
+@keyframes mouse-wheel {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
   100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(7px);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
     opacity: 0.5;
   }
   50% {
@@ -166,14 +198,14 @@ export default {
 
 /* Animación deslizar */
 @keyframes swipeAnimation {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0);
   }
   50% {
     transform: translateY(-10px);
   }
 }
+
 .sm\:hidden svg {
   animation: swipeAnimation 2s infinite;
 }
