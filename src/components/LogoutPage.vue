@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { ref, onMounted, onUnmounted } from "vue";
+import { auth_api } from "../lib/api";
 
 const countdown = ref(7);
 const redirecting = ref(false);
 const userName = ref("");
+let unsubscribe: (() => void) | null = null;
 
 const clearAuthState = () => {
   // Limpiar el estado de autenticación
@@ -21,25 +21,30 @@ const clearAuthState = () => {
 };
 
 onMounted(() => {
-  // Primero obtenemos el usuario actual y guardamos su nombre
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
+  // Nos suscribimos a los cambios de estado de autenticación
+  unsubscribe = auth_api.onAuthStateChange((user) => {
     if (user) {
       userName.value =
         user.displayName || user.email?.split("@")[0] || "Usuario";
-      // Una vez que tenemos el nombre, procedemos con el logout
       handleLogout();
+    } else {
+      // Si no hay usuario, redirigimos a inicio
+      window.location.replace("/");
     }
-    unsubscribe(); // Nos desuscribimos después de obtener la información
   });
+});
+
+onUnmounted(() => {
+  // Limpiamos la suscripción cuando el componente se desmonta
+  if (unsubscribe) {
+    unsubscribe();
+  }
 });
 
 const handleLogout = async () => {
   try {
-    // Cerrar sesión en Firebase usando la instancia singleton
-    await signOut(auth);
-
-    // Limpiar estado de autenticación
-    clearAuthState();
+    // Usar auth_api para cerrar sesión
+    await auth_api.logout();
 
     // Iniciar la cuenta regresiva
     redirecting.value = true;

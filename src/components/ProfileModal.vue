@@ -90,8 +90,7 @@
 
 <script setup>
 import { ref, reactive } from "vue";
-import { getAuth } from "firebase/auth";
-import { usuarios } from "../lib/api";
+import { auth_api, usuarios } from "../lib/api";
 
 const props = defineProps({
   isOpen: {
@@ -128,8 +127,7 @@ const handleSubmit = async () => {
     error.value = "";
     progress.value = 0;
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = auth_api.getCurrentUser();
 
     if (!user) {
       throw new Error("No hay sesión activa");
