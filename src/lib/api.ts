@@ -44,6 +44,31 @@ export interface Fecha {
   updatedBy?: string;
 }
 
+export interface EventoAPI {
+  id: string;
+  titulo?: string;
+  descripcion?: string;
+  textoBoton?: string;
+  linkBoton?: string;
+  image?: string;
+  fecha?: string;
+  createdAt?: any;
+  createdBy?: string;
+  updatedAt?: any;
+  updatedBy?: string;
+}
+
+export interface Evento extends Required<Pick<EventoAPI, 'id' | 'titulo' | 'descripcion'>> {
+  textoBoton?: string;
+  linkBoton?: string;
+  image?: string;
+  fecha?: string;
+  createdAt?: any;
+  createdBy?: string;
+  updatedAt?: any;
+  updatedBy?: string;
+}
+
 // Función para verificar autenticación
 const checkAuth = () => {
   if (!auth.currentUser) {

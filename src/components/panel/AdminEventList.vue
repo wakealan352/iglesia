@@ -1,36 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { eventos, usuarios, type UserProfile } from "../../lib/api.ts";
+import { eventos, usuarios, type UserProfile, type EventoAPI, type Evento } from "../../lib/api.ts";
 import EventoModal from "./modals/EventoModal.vue";
 import { auth } from "../../lib/firebase";
-
-interface EventoAPI {
-  id: string;
-  titulo?: string;
-  descripcion?: string;
-  textoBoton?: string;
-  linkBoton?: string;
-  image?: string;
-  fecha?: string;
-  createdAt?: any;
-  createdBy?: string;
-  updatedAt?: any;
-  updatedBy?: string;
-}
-
-interface Evento {
-  id: string;
-  titulo: string;
-  descripcion: string;
-  textoBoton?: string;
-  linkBoton?: string;
-  image?: string;
-  fecha?: string;
-  createdAt?: any;
-  createdBy?: string;
-  updatedAt?: any;
-  updatedBy?: string;
-}
 
 const eventList = ref<Evento[]>([]);
 const error = ref("");
