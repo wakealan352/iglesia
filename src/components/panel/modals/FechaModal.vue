@@ -434,9 +434,6 @@ export default {
       return option ? option.colorName : "";
     },
     saveFecha() {
-      // La fecha del formulario ya está en formato YYYY-MM-DD
-      // No necesitamos hacer ajustes de zona horaria aquí porque el input type="date"
-      // ya nos da la fecha en el formato correcto para el día seleccionado
       this.fechaForm.infoIconoTexto = this.fechaForm.tipoIcono;
       if (!this.fechaForm.tieneBanner) {
         this.fechaForm.banner = null;
