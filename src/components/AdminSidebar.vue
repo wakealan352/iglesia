@@ -261,8 +261,8 @@ const loadUserProfile = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
-      const profile = await usuarios.getProfile(user.uid);
-      displayName.value = profile.displayName;
+      const { data } = await usuarios.getById(user.uid);
+      displayName.value = data.displayName;
     }
   } catch (error) {
     console.error("Error al cargar el perfil:", error);

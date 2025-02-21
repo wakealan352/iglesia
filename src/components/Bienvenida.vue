@@ -95,7 +95,7 @@ export default {
       if (auth.currentUser) {
         try {
           // Primero intentamos obtener el perfil directamente
-          const profile = await usuarios.getProfile(auth.currentUser.uid);
+          const profile = await usuarios.getById(auth.currentUser.uid);
           this.displayName = profile.displayName;
 
           // Luego nos suscribimos a los cambios

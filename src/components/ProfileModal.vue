@@ -91,7 +91,7 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { usuarios } from "../lib/api";
 
 const props = defineProps({
   isOpen: {
@@ -135,15 +135,10 @@ const handleSubmit = async () => {
       throw new Error("No hay sesión activa");
     }
 
-    const db = getFirestore();
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
-        displayName: formData.displayName,
-        updatedAt: new Date(),
-      },
-      { merge: true }
-    );
+    await usuarios.update(user.uid, {
+      displayName: formData.displayName,
+      updatedAt: new Date(),
+    });
 
     isSuccess.value = true;
 

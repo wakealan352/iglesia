@@ -16,6 +16,7 @@ import {
   orderBy,
   serverTimestamp,
   onSnapshot,
+  setDoc,
 } from "firebase/firestore";
 
 import { auth, db } from "./firebase";
@@ -96,21 +97,25 @@ export const usuarios = {
     }
   },
 
-  getProfile: async (userId: string): Promise<UserProfile> => {
+  getById: async (userId: string): Promise<{ data: UserProfile }> => {
     try {
       const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
         const data = userDoc.data();
         return {
-          displayName: data.displayName || auth.currentUser?.displayName || "",
-          email: data.email || auth.currentUser?.email || "",
-          updatedAt: data.updatedAt?.toDate() || new Date(),
+          data: {
+            displayName: data.displayName || auth.currentUser?.displayName || "",
+            email: data.email || auth.currentUser?.email || "",
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+          }
         };
       }
       return {
-        displayName: auth.currentUser?.displayName || "",
-        email: auth.currentUser?.email || "",
-        updatedAt: new Date(),
+        data: {
+          displayName: auth.currentUser?.displayName || "",
+          email: auth.currentUser?.email || "",
+          updatedAt: new Date(),
+        }
       };
     } catch (error) {
       console.error("Error al cargar el perfil:", error);
@@ -146,6 +151,16 @@ export const usuarios = {
         throw new Error("Error en la suscripción a cambios del perfil");
       }
     );
+  },
+
+  update: async (userId: string, data: Partial<UserProfile>): Promise<void> => {
+    try {
+      const userDocRef = doc(db, "users", userId);
+      await setDoc(userDocRef, data, { merge: true });
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+      throw new Error("No se pudo actualizar el perfil del usuario");
+    }
   },
 };
 
