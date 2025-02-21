@@ -219,11 +219,22 @@
     </div>
   </nav>
 
+  <!-- Overlay para cerrar el menú al hacer clic fuera -->
+  <div
+    v-if="isMenuOpen"
+    class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+    @click="closeMenu"
+  ></div>
+
   <!-- Menú móvil -->
   <div
     v-show="isMenuOpen"
     class="fixed top-[72px] left-0 right-0 z-40 animate__animated lg:hidden p-4 bg-gray-800"
-    :class="{ animate__slideInDown: isMenuOpen }"
+    :class="{
+      'animate__slideInDown': isMenuOpen && !isClosing,
+      'animate__slideOutUp': isClosing
+    }"
+    @animationend="handleAnimationEnd"
   >
     <div
       class="relative p-[2px] rounded-lg shadow-xl sm:shadow-none bg-gray-100 dark:bg-gradient-to-r dark:from-teal-500 dark:to-blue-500 dark:animate-gradient"
@@ -277,6 +288,7 @@ export default {
       activeSection: "",
       currentPath: "",
       isMenuOpen: false,
+      isClosing: false,
       menuItems: [
         { href: "/#inicio", text: "Inicio" },
         { href: "/#anuncios", text: "Anuncios y Eventos" },
@@ -290,22 +302,32 @@ export default {
   },
   methods: {
     toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen;
-      if (this.isMenuOpen) {
+      if (!this.isMenuOpen) {
+        this.isMenuOpen = true;
+        this.isClosing = false;
         document.body.style.overflow = "hidden";
       } else {
+        this.isClosing = true;
         document.body.style.overflow = "";
       }
     },
     closeMenu() {
-      this.isMenuOpen = false;
-      document.body.style.overflow = "";
-      this.$nextTick(() => {
-        if (this.currentPath === "/") {
-          this.handleScroll();
-        }
-        this.updateActiveLink();
-      });
+      if (this.isMenuOpen) {
+        this.isClosing = true;
+        document.body.style.overflow = "";
+      }
+    },
+    handleAnimationEnd() {
+      if (this.isClosing) {
+        this.isMenuOpen = false;
+        this.isClosing = false;
+        this.$nextTick(() => {
+          if (this.currentPath === "/") {
+            this.handleScroll();
+          }
+          this.updateActiveLink();
+        });
+      }
     },
     toggleDarkMode() {
       const isDarkMode = !document.documentElement.classList.contains("dark");
@@ -335,9 +357,25 @@ export default {
       window.location.href = "/login";
     },
     handleDocumentClick(event) {
-      const adminMenu = this.$el.querySelector(".relative");
-      if (adminMenu && !adminMenu.contains(event.target)) {
-        this.closeAdminMenu();
+      // Si el menú móvil está abierto y se hace clic fuera de él
+      if (this.isMenuOpen) {
+        const mobileMenu = this.$el.querySelector(".fixed.top-\\[72px\\]");
+        const hamburgerButton = this.$el.querySelector("button[class*='lg:hidden']");
+        
+        // Verificar si el clic fue fuera del menú y del botón hamburguesa
+        if (mobileMenu && 
+            !mobileMenu.contains(event.target) && 
+            !hamburgerButton.contains(event.target)) {
+          this.closeMenu();
+        }
+      }
+
+      // Manejo del menú admin
+      if (this.adminMenuVisible) {
+        const adminMenu = this.$el.querySelector(".relative");
+        if (adminMenu && !adminMenu.contains(event.target)) {
+          this.closeAdminMenu();
+        }
       }
     },
     checkAuthStatus() {
@@ -421,7 +459,9 @@ export default {
   mounted() {
     this.loadDarkModePreference();
     this.checkAuthStatus();
-    document.addEventListener("click", this.handleDocumentClick);
+    
+    // Agregar el event listener al document
+    document.body.addEventListener("click", this.handleDocumentClick);
 
     this.updateCurrentPath();
 
@@ -434,13 +474,13 @@ export default {
 
     window.addEventListener("popstate", this.updateCurrentPath);
 
-    // Verificar que el componente LoginForm esté disponible
     if (!this.$refs.loginFormRef) {
       console.warn("LoginForm no está disponible en el montaje inicial");
     }
   },
   beforeUnmount() {
-    document.removeEventListener("click", this.handleDocumentClick);
+    // Remover el event listener del document
+    document.body.removeEventListener("click", this.handleDocumentClick);
     window.removeEventListener("scroll", this.handleScroll);
     window.removeEventListener("popstate", this.updateCurrentPath);
     document.body.style.overflow = "";
