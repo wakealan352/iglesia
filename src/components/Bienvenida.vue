@@ -12,12 +12,33 @@
       ></div>
       <div class="relative h-full flex items-center justify-center z-10">
         <div class="text-center text-white p-5 selection:bg-teal-500">
-          <h1 class="text-4xl sm:text-5xl font-bold mb-4">
-            {{ saludo }} {{ displayName ? displayName : "a nuestra iglesia" }}
-          </h1>
-          <p class="text-xl sm:text-2xl">
-            Un lugar de fe, comunidad y crecimiento espiritual
-          </p>
+          <div v-if="displayName && !isLoading">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+              {{ saludo }}, {{ displayName }}
+            </h1>
+            <p class="text-xl sm:text-2xl">
+              Nos alegra tenerte aquí. Este es un lugar de fe, comunidad y
+              crecimiento espiritual.
+            </p>
+          </div>
+
+          <div v-else-if="!isLoading">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+              Bienvenido a nuestra iglesia
+            </h1>
+            <p class="text-xl sm:text-2xl">
+              Un lugar de fe, comunidad y crecimiento espiritual
+            </p>
+          </div>
+
+          <div v-if="isLoading">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4 opacity-0">
+              Bienvenido
+            </h1>
+            <p class="text-xl sm:text-2xl opacity-0">
+              Un lugar de fe, comunidad y crecimiento espiritual
+            </p>
+          </div>
         </div>
       </div>
       <!-- Scroll/Swipe Indicator -->
@@ -65,11 +86,14 @@ export default {
       unsubscribe: null,
       authUnsubscribe: null,
       nombresFemeninos: ["Angie", "Ana", "Maria", "Laura", "Sofia", "Isabella"],
+      isLoading: true,
+      previousDisplayName: "",
     };
   },
   computed: {
     saludo() {
-      if (this.nombresFemeninos.includes(this.displayName)) {
+      const nombre = this.displayName || this.previousDisplayName;
+      if (this.nombresFemeninos.includes(nombre)) {
         return "Bienvenida";
       } else {
         return "Bienvenido";
@@ -89,30 +113,73 @@ export default {
         }
       }
     },
+    initializeFromLocalStorage() {
+      try {
+        if (typeof window !== "undefined") {
+          const storedName = localStorage.getItem("userDisplayName");
+          if (storedName) {
+            this.displayName = storedName;
+            this.isLoading = false;
+          }
+        }
+      } catch (error) {
+        console.error("Error accediendo a localStorage:", error);
+      }
+    },
     async setupProfileSubscription() {
       const user = auth_api.getCurrentUser();
       if (user) {
         try {
           // Primero intentamos obtener el perfil directamente
           const profile = await usuarios.getById(user.uid);
+          this.previousDisplayName = this.displayName;
           this.displayName = profile.data.displayName;
+          // Actualizamos el localStorage con el nuevo valor
+          if (profile.data.displayName && typeof window !== "undefined") {
+            try {
+              localStorage.setItem("userDisplayName", profile.data.displayName);
+            } catch (error) {
+              console.error("Error guardando en localStorage:", error);
+            }
+          }
 
           // Luego nos suscribimos a los cambios
           this.unsubscribe = usuarios.subscribeToProfile(
             user.uid,
             (profile) => {
+              this.previousDisplayName = this.displayName;
               this.displayName = profile.displayName;
+              // Actualizamos el localStorage cuando cambie el perfil
+              if (profile.displayName && typeof window !== "undefined") {
+                try {
+                  localStorage.setItem("userDisplayName", profile.displayName);
+                } catch (error) {
+                  console.error("Error guardando en localStorage:", error);
+                }
+              }
             }
           );
         } catch (error) {
           console.error("Error al obtener el perfil:", error);
+        } finally {
+          this.isLoading = false;
         }
       } else {
+        this.previousDisplayName = this.displayName;
         this.displayName = "";
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.removeItem("userDisplayName");
+          } catch (error) {
+            console.error("Error removiendo de localStorage:", error);
+          }
+        }
+        this.isLoading = false;
       }
     },
   },
   async mounted() {
+    this.initializeFromLocalStorage();
     window.addEventListener("scroll", this.handleScroll);
 
     // Suscribirse a cambios en el estado de autenticación
@@ -121,9 +188,17 @@ export default {
         this.setupProfileSubscription();
       } else {
         this.displayName = "";
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.removeItem("userDisplayName");
+          } catch (error) {
+            console.error("Error removiendo de localStorage:", error);
+          }
+        }
         if (this.unsubscribe) {
           this.unsubscribe();
         }
+        this.isLoading = false;
       }
     });
   },

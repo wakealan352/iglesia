@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { auth_api } from "../../lib/api";
+import { auth_api, usuarios } from "../../lib/api";
 
 const username = ref("");
 const password = ref("");
@@ -136,10 +136,34 @@ const handleSubmit = async () => {
       password: sanitizarEntrada(password.value),
     });
 
+    // Obtener el perfil del usuario y guardarlo en localStorage
+    try {
+      const userProfile = await auth_api.getCurrentUser();
+      if (userProfile?.uid) {
+        const profile = await usuarios.getById(userProfile.uid);
+        if (profile?.data?.displayName && typeof window !== "undefined") {
+          try {
+            localStorage.setItem("userDisplayName", profile.data.displayName);
+          } catch (error) {
+            console.error("Error guardando en localStorage:", error);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error al guardar perfil en localStorage:", err);
+    }
+
     isSuccess.value = true;
     intentosFallidos.value = 0;
     animateProgress();
-    localStorage.setItem("token", response.data.token);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("token", response.data.token);
+      } catch (error) {
+        console.error("Error guardando token en localStorage:", error);
+      }
+    }
 
     setTimeout(() => {
       emit("login-success", response.data);
