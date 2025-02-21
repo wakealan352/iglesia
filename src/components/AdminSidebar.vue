@@ -187,8 +187,7 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import CambioContrasena from "./CambioContrasena.vue";
 import ProfileModal from "./ProfileModal.vue";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { usuarios } from "../lib/api.ts";
+import { auth_api, usuarios } from "../lib/api.ts";
 
 const props = defineProps({
   isOpen: {
@@ -202,6 +201,8 @@ const currentPath = ref("");
 const cambioContrasenaRef = ref(null);
 const displayName = ref("");
 const showProfileModal = ref(false);
+let unsubscribeAuth = null;
+let unsubscribeProfile = null;
 
 // Función para obtener la inicial del nombre de usuario
 const getUserInitial = (name) => {
@@ -256,46 +257,67 @@ const updateCurrentPath = () => {
   currentPath.value = window.location.pathname;
 };
 
-const loadUserProfile = async () => {
-  try {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      const { data } = await usuarios.getById(user.uid);
-      displayName.value = data.displayName;
+const updateUserProfile = async () => {
+  const user = auth_api.getCurrentUser();
+  if (user?.uid) {
+    try {
+      // Obtener perfil inicial
+      const profile = await usuarios.getById(user.uid);
+      displayName.value = profile.data.displayName || "";
+
+      // Limpiar suscripción anterior si existe
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+      }
+
+      // Suscribirse a cambios en el perfil
+      unsubscribeProfile = usuarios.subscribeToProfile(user.uid, (profile) => {
+        displayName.value = profile.displayName || "";
+      });
+    } catch (error) {
+      console.error("Error al cargar el perfil:", error);
     }
-  } catch (error) {
-    console.error("Error al cargar el perfil:", error);
+  } else {
+    displayName.value = "";
+    if (unsubscribeProfile) {
+      unsubscribeProfile();
+      unsubscribeProfile = null;
+    }
   }
 };
-
-// Variable para almacenar la desuscripción del listener
-let unsubscribeUser = null;
 
 onMounted(async () => {
   updateCurrentPath();
   window.addEventListener("popstate", updateCurrentPath);
 
-  // Configurar el listener de autenticación
-  const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Cargar el perfil inicial
-      loadUserProfile();
+  // Cargar perfil inicial
+  await updateUserProfile();
 
-      // Configurar el listener en tiempo real
-      unsubscribeUser = usuarios.subscribeToProfile(user.uid, (profile) => {
-        displayName.value = profile.displayName;
-      });
+  // Suscribirse a cambios de autenticación
+  unsubscribeAuth = auth_api.onAuthStateChange(async (user) => {
+    if (user) {
+      await updateUserProfile();
+    } else {
+      displayName.value = "";
+      // Limpiar la suscripción del perfil si existe
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+        unsubscribeProfile = null;
+      }
     }
   });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("popstate", updateCurrentPath);
-  // Limpiar el listener de Firestore
-  if (unsubscribeUser) {
-    unsubscribeUser();
+  // Limpiar todas las suscripciones
+  if (unsubscribeAuth) {
+    unsubscribeAuth();
+    unsubscribeAuth = null;
+  }
+  if (unsubscribeProfile) {
+    unsubscribeProfile();
+    unsubscribeProfile = null;
   }
 });
 </script>

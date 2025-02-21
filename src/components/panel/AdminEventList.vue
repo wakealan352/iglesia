@@ -8,7 +8,6 @@ import {
   type Evento,
 } from "../../lib/api.ts";
 import EventoModal from "./modals/EventoModal.vue";
-import { auth } from "../../lib/firebase";
 
 const eventList = ref<Evento[]>([]);
 const error = ref("");
@@ -152,8 +151,9 @@ watch(formMode, (newMode) => {
 });
 
 const loadUserProfile = async () => {
-  if (auth.currentUser) {
-    const response = await usuarios.getById(auth.currentUser.uid);
+  const currentUser = auth_api.getCurrentUser();
+  if (currentUser) {
+    const response = await usuarios.getById(currentUser.uid);
     userName.value = response.data.displayName;
   }
 };
