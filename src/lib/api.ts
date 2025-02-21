@@ -3,6 +3,7 @@ import {
   updatePassword,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   collection,
@@ -59,7 +60,8 @@ export interface EventoAPI {
   updatedBy?: string;
 }
 
-export interface Evento extends Required<Pick<EventoAPI, 'id' | 'titulo' | 'descripcion'>> {
+export interface Evento
+  extends Required<Pick<EventoAPI, "id" | "titulo" | "descripcion">> {
   textoBoton?: string;
   linkBoton?: string;
   image?: string;
@@ -104,10 +106,11 @@ export const usuarios = {
         const data = userDoc.data();
         return {
           data: {
-            displayName: data.displayName || auth.currentUser?.displayName || "",
+            displayName:
+              data.displayName || auth.currentUser?.displayName || "",
             email: data.email || auth.currentUser?.email || "",
             updatedAt: data.updatedAt?.toDate() || new Date(),
-          }
+          },
         };
       }
       return {
@@ -115,7 +118,7 @@ export const usuarios = {
           displayName: auth.currentUser?.displayName || "",
           email: auth.currentUser?.email || "",
           updatedAt: new Date(),
-        }
+        },
       };
     } catch (error) {
       console.error("Error al cargar el perfil:", error);
@@ -378,10 +381,20 @@ export const fechas = {
     try {
       checkAuth();
       const docRef = doc(db, "fechas", id);
+
+      // Primero obtenemos el documento actual para preservar createdBy y otros campos
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        throw new Error("Fecha no encontrada");
+      }
+
+      const currentData = docSnap.data();
       const fechaData = {
-        ...data,
+        ...currentData, // Mantenemos los datos existentes
+        ...data, // Actualizamos con los nuevos datos
         updatedAt: serverTimestamp(),
         updatedBy: auth.currentUser.uid,
+        createdBy: currentData.createdBy, // Aseguramos que createdBy se mantenga
       };
 
       await updateDoc(docRef, fechaData);
@@ -431,6 +444,31 @@ export const auth_api = {
       throw error;
     }
   },
+
+  logout: async () => {
+    try {
+      await auth.signOut();
+      localStorage.removeItem("token");
+      sessionStorage.clear();
+      // Limpiar IndexedDB si es necesario
+      try {
+        indexedDB.deleteDatabase("firebaseLocalStorageDb");
+      } catch (e) {
+        console.error("Error al limpiar IndexedDB:", e);
+      }
+    } catch (error: any) {
+      throw new Error("Error al cerrar sesión");
+    }
+  },
+
+  getCurrentUser: () => {
+    return auth.currentUser;
+  },
+
+  onAuthStateChange: (callback: (user: any) => void) => {
+    return onAuthStateChanged(auth, callback);
+  },
+
   changePassword: async (passwords: {
     oldPassword: string;
     newPassword: string;

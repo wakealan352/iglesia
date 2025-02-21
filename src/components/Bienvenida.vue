@@ -55,9 +55,7 @@
 </template>
 
 <script>
-import { auth } from "../lib/firebase";
-import { usuarios } from "../lib/api";
-import { onAuthStateChanged } from "firebase/auth";
+import { usuarios, auth_api } from "../lib/api";
 
 export default {
   data() {
@@ -92,15 +90,16 @@ export default {
       }
     },
     async setupProfileSubscription() {
-      if (auth.currentUser) {
+      const user = auth_api.getCurrentUser();
+      if (user) {
         try {
           // Primero intentamos obtener el perfil directamente
-          const profile = await usuarios.getById(auth.currentUser.uid);
-          this.displayName = profile.displayName;
+          const profile = await usuarios.getById(user.uid);
+          this.displayName = profile.data.displayName;
 
           // Luego nos suscribimos a los cambios
           this.unsubscribe = usuarios.subscribeToProfile(
-            auth.currentUser.uid,
+            user.uid,
             (profile) => {
               this.displayName = profile.displayName;
             }
@@ -116,15 +115,14 @@ export default {
   async mounted() {
     window.addEventListener("scroll", this.handleScroll);
 
-    // Observar cambios en el estado de autenticación
-    this.authUnsubscribe = onAuthStateChanged(auth, (user) => {
+    // Suscribirse a cambios en el estado de autenticación
+    this.authUnsubscribe = auth_api.onAuthStateChange((user) => {
       if (user) {
         this.setupProfileSubscription();
       } else {
         this.displayName = "";
         if (this.unsubscribe) {
           this.unsubscribe();
-          this.unsubscribe = null;
         }
       }
     });
@@ -188,7 +186,8 @@ export default {
 }
 
 @keyframes fadeInOut {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
   }
   50% {
@@ -198,7 +197,8 @@ export default {
 
 /* Animación deslizar */
 @keyframes swipeAnimation {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

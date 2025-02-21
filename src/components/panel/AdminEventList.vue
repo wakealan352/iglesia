@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { eventos, usuarios, type UserProfile, type EventoAPI, type Evento } from "../../lib/api.ts";
+import {
+  eventos,
+  usuarios,
+  type UserProfile,
+  type EventoAPI,
+  type Evento,
+} from "../../lib/api.ts";
 import EventoModal from "./modals/EventoModal.vue";
 import { auth } from "../../lib/firebase";
 
@@ -21,8 +27,8 @@ const loadUserProfiles = async (events: Evento[]) => {
 
   for (const userId of userIds) {
     try {
-      const profile = await usuarios.getProfile(userId);
-      userProfiles.value[userId] = profile;
+      const response = await usuarios.getById(userId);
+      userProfiles.value[userId] = response.data;
     } catch (err) {
       console.error(`Error al cargar el perfil del usuario ${userId}:`, err);
     }
@@ -147,8 +153,8 @@ watch(formMode, (newMode) => {
 
 const loadUserProfile = async () => {
   if (auth.currentUser) {
-    const profile = await usuarios.getProfile(auth.currentUser.uid);
-    userName.value = profile.displayName;
+    const response = await usuarios.getById(auth.currentUser.uid);
+    userName.value = response.data.displayName;
   }
 };
 
@@ -325,18 +331,18 @@ onMounted(() => {
               class="flex items-center"
             >
               <span class="font-medium mr-1">Agregado por:</span>
-              <span class="text-teal-600 dark:text-teal-400">{{
-                userProfiles[evento.createdBy].displayName
-              }}</span>
+              <span class="text-teal-600 dark:text-teal-400">
+                {{ userProfiles[evento.createdBy].displayName || "Usuario" }}
+              </span>
             </div>
             <div
               v-if="evento.updatedBy && userProfiles[evento.updatedBy]"
               class="flex items-center"
             >
               <span class="font-medium mr-1">Modificado por:</span>
-              <span class="text-teal-600 dark:text-teal-400">{{
-                userProfiles[evento.updatedBy].displayName
-              }}</span>
+              <span class="text-teal-600 dark:text-teal-400">
+                {{ userProfiles[evento.updatedBy].displayName || "Usuario" }}
+              </span>
             </div>
           </div>
 
