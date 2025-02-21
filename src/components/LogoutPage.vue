@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getAuth, signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 
-const countdown = ref(10);
+const countdown = ref(7);
 const redirecting = ref(false);
+const userName = ref("");
 
 const clearAuthState = () => {
-  // Limpiar todo el estado de autenticación
+  // Limpiar el estado de autenticación
   localStorage.removeItem("token");
   sessionStorage.clear();
 
@@ -19,7 +20,20 @@ const clearAuthState = () => {
   }
 };
 
-onMounted(async () => {
+onMounted(() => {
+  // Primero obtenemos el usuario actual y guardamos su nombre
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userName.value =
+        user.displayName || user.email?.split("@")[0] || "Usuario";
+      // Una vez que tenemos el nombre, procedemos con el logout
+      handleLogout();
+    }
+    unsubscribe(); // Nos desuscribimos después de obtener la información
+  });
+});
+
+const handleLogout = async () => {
   try {
     // Cerrar sesión en Firebase usando la instancia singleton
     await signOut(auth);
@@ -43,7 +57,7 @@ onMounted(async () => {
     clearAuthState();
     window.location.replace("/");
   }
-});
+};
 </script>
 
 <template>
@@ -62,7 +76,7 @@ onMounted(async () => {
 
       <!-- Mensaje de desconexión -->
       <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-        ¡Hasta pronto!
+        ¡Hasta pronto, {{ userName }}!
       </h2>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         Has cerrado sesión correctamente
