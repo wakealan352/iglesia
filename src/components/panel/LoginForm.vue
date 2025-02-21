@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { auth_api } from "../../lib/api";
 
 const username = ref("");
@@ -81,15 +81,48 @@ const closeModal = () => {
   emit("close");
 };
 
+const handleBlockedForm = () => {
+  const minutos = Math.floor(tiempoRestante.value / 60);
+  const segundos = tiempoRestante.value % 60;
+  const tiempoFormateado =
+    minutos > 0
+      ? `${minutos} minutos y ${segundos} segundos`
+      : `${segundos} segundos`;
+  error.value = `Formulario bloqueado. Espere ${tiempoFormateado}.`;
+};
+
+const handleFirebaseError = (err: any) => {
+  if (!err?.code) return "Error al iniciar sesión";
+
+  const errorMessages: { [key: string]: string } = {
+    "auth/invalid-email": "El correo electrónico no es válido",
+    "auth/user-disabled": "Esta cuenta ha sido deshabilitada",
+    "auth/user-not-found": "No existe una cuenta con este correo",
+    "auth/wrong-password": "Contraseña incorrecta",
+    "auth/too-many-requests":
+      "Demasiados intentos fallidos. Por favor, intente más tarde",
+    "auth/network-request-failed":
+      "Error de conexión. Verifique su conexión a internet",
+  };
+
+  return errorMessages[err.code] || "Error al iniciar sesión";
+};
+
+const animateProgress = () => {
+  const animationDuration = 1000;
+  const steps = 100;
+  const stepDuration = animationDuration / steps;
+
+  for (let i = 1; i <= steps; i++) {
+    setTimeout(() => {
+      progress.value = i;
+    }, i * stepDuration);
+  }
+};
+
 const handleSubmit = async () => {
   if (bloqueado.value) {
-    const minutos = Math.floor(tiempoRestante.value / 60);
-    const segundos = tiempoRestante.value % 60;
-    const tiempoFormateado =
-      minutos > 0
-        ? `${minutos} minutos y ${segundos} segundos`
-        : `${segundos} segundos`;
-    error.value = `Formulario bloqueado. Espere ${tiempoFormateado}.`;
+    handleBlockedForm();
     return;
   }
 
@@ -98,28 +131,14 @@ const handleSubmit = async () => {
     error.value = "";
     progress.value = 0;
 
-    const usuarioSanitizado = sanitizarEntrada(username.value);
-    const passwordSanitizada = sanitizarEntrada(password.value);
-
     const response = await auth_api.login({
-      username: usuarioSanitizado,
-      password: passwordSanitizada,
+      username: sanitizarEntrada(username.value),
+      password: sanitizarEntrada(password.value),
     });
 
     isSuccess.value = true;
     intentosFallidos.value = 0;
-
-    const animationDuration = 1000;
-    const steps = 100;
-    const stepDuration = animationDuration / steps;
-
-    for (let i = 1; i <= steps; i++) {
-      setTimeout(() => {
-        progress.value = i;
-      }, i * stepDuration);
-    }
-
-    // Almacenar el token de Firebase
+    animateProgress();
     localStorage.setItem("token", response.data.token);
 
     setTimeout(() => {
@@ -128,46 +147,10 @@ const handleSubmit = async () => {
     }, 1000);
   } catch (err: any) {
     intentosFallidos.value++;
-
-    // Manejar errores específicos de Firebase
-    let mensajeError = "Error al iniciar sesión";
-
-    if (err?.code) {
-      switch (err.code) {
-        case "auth/invalid-email":
-          mensajeError = "El correo electrónico no es válido";
-          break;
-        case "auth/user-disabled":
-          mensajeError = "Esta cuenta ha sido deshabilitada";
-          break;
-        case "auth/user-not-found":
-          mensajeError = "No existe una cuenta con este correo";
-          break;
-        case "auth/wrong-password":
-          mensajeError = "Contraseña incorrecta";
-          break;
-        case "auth/too-many-requests":
-          mensajeError =
-            "Demasiados intentos fallidos. Por favor, intente más tarde";
-          break;
-        case "auth/network-request-failed":
-          mensajeError = "Error de conexión. Verifique su conexión a internet";
-          break;
-      }
-    }
+    error.value = handleFirebaseError(err);
 
     if (intentosFallidos.value >= 3) {
-      const tiempoProximo = calcularTiempoBloqueo();
-      const minutos = Math.floor(tiempoProximo / 60);
-      const segundos = tiempoProximo % 60;
-      const tiempoFormateado =
-        minutos > 0
-          ? `${minutos} minutos y ${segundos} segundos`
-          : `${segundos} segundos`;
-      error.value = `Demasiados intentos fallidos. El formulario se bloqueará por ${tiempoFormateado}.`;
       iniciarBloqueo();
-    } else {
-      error.value = mensajeError;
     }
 
     isSuccess.value = false;
