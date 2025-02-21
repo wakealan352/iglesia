@@ -49,6 +49,7 @@
             type="text"
             id="displayName"
             v-model="formData.displayName"
+            :placeholder="currentDisplayName || 'Ingresa tu nombre de usuario'"
             class="w-full px-3 py-2 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             required
           />
@@ -89,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { auth_api, usuarios } from "../lib/api";
 
 const props = defineProps({
@@ -108,6 +109,14 @@ const emit = defineEmits(["close", "update"]);
 const formData = reactive({
   displayName: props.currentDisplayName,
 });
+
+// Watcher para mantener sincronizado el displayName
+watch(
+  () => props.currentDisplayName,
+  (newValue) => {
+    formData.displayName = newValue;
+  }
+);
 
 const isLoading = ref(false);
 const isSuccess = ref(false);
