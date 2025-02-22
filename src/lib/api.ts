@@ -325,9 +325,9 @@ export const fechas = {
         data: snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          createdBy: users.get(doc.data().createdBy) || "Usuario desconocido",
+          createdBy: users.get(doc.data().createdBy) || "Desconocido",
           updatedBy: doc.data().updatedBy
-            ? users.get(doc.data().updatedBy) || "Usuario desconocido"
+            ? users.get(doc.data().updatedBy) || "Desconocido"
             : undefined,
         })),
       };
