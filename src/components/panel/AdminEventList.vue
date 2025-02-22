@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import {
   eventos,
   usuarios,
+  auth_api,
   type UserProfile,
   type EventoAPI,
   type Evento,
