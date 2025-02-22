@@ -159,10 +159,19 @@
               </div>
 
               <div class="relative">
+                <input
+                  type="text"
+                  id="iconSelector"
+                  v-model="fechaForm.tipoIcono"
+                  class="sr-only"
+                  tabindex="-1"
+                  readonly
+                />
                 <button
                   type="button"
                   @click="showDropdown = !showDropdown"
                   class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-500 text-left"
+                  aria-labelledby="iconSelector"
                 >
                   <div class="flex items-center">
                     <span
@@ -190,6 +199,7 @@
                   </div>
                 </button>
                 <label
+                  for="iconSelector"
                   class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 left-1"
                 >
                   {{
