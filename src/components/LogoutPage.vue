@@ -4,7 +4,6 @@ import { auth_api } from "../lib/api";
 
 const countdown = ref(7);
 const redirecting = ref(false);
-const userName = ref("");
 let unsubscribe: (() => void) | null = null;
 
 const clearAuthState = () => {
@@ -24,8 +23,6 @@ onMounted(() => {
   // Nos suscribimos a los cambios de estado de autenticación
   unsubscribe = auth_api.onAuthStateChange((user) => {
     if (user) {
-      userName.value =
-        user.displayName || user.email?.split("@")[0] || "Usuario";
       handleLogout();
     } else {
       // Si no hay usuario, redirigimos a inicio
@@ -81,7 +78,7 @@ const handleLogout = async () => {
 
       <!-- Mensaje de desconexión -->
       <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-        ¡Hasta pronto, {{ userName }}!
+        ¡Hasta pronto!
       </h2>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         Has cerrado sesión correctamente
