@@ -268,7 +268,10 @@ export default {
       );
       fecha.setDate(fecha.getDate() + ((7 - fecha.getDay()) % 7));
 
-      while (fecha <= fin) {
+      let iteraciones = 0;
+      const maxIteraciones = 5; // Máximo de 5 domingos
+      const finTime = fin.getTime();
+      while (fecha.getTime() <= finTime && iteraciones < maxIteraciones) {
         const esPrimerDomingo = fecha.getDate() <= 7;
         const fechaServicio = new Date(
           fecha.toLocaleString("en-US", { timeZone: "America/Bogota" })
@@ -288,6 +291,7 @@ export default {
           diaSemana: "Domingo",
         });
         fecha.setDate(fecha.getDate() + 7);
+        iteraciones++;
       }
       return servicios;
     };
