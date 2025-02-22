@@ -71,25 +71,33 @@
 
                 <div
                   v-show="isConocenosOpen"
-                  class="absolute left-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl py-2 z-50"
+                  class="absolute left-1/2 transform -translate-x-1/2 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl py-2 z-50 dropdown-menu border border-white"
+                  style="top: calc(100% + 8px)"
                 >
+                  <div
+                    class="absolute -top-[9px] left-1/2 transform -translate-x-1/2 w-4 h-4 rotate-45 bg-gray-800"
+                  >
+                    <div
+                      class="absolute inset-0 border-l border-t border-white"
+                    ></div>
+                  </div>
                   <a
                     href="/#pastor"
-                    class="block px-4 py-2 text-white hover:text-teal-400"
+                    class="block px-4 py-2 text-white hover:bg-gray-700 hover:text-teal-400 transition-colors duration-200 mt-1"
                     @click="closeConocenosMenu"
                   >
                     Pastor
                   </a>
                   <a
                     href="/#servicio"
-                    class="block px-4 py-2 text-white hover:text-teal-400"
+                    class="block px-4 py-2 text-white hover:bg-gray-700 hover:text-teal-400 transition-colors duration-200"
                     @click="closeConocenosMenu"
                   >
                     Servicios
                   </a>
                   <a
                     href="/#ministerios"
-                    class="block px-4 py-2 text-white hover:text-teal-400"
+                    class="block px-4 py-2 text-white hover:bg-gray-700 hover:text-teal-400 transition-colors duration-200"
                     @click="closeConocenosMenu"
                   >
                     Ministerios
@@ -594,5 +602,41 @@ body {
 .dark .dark\:animate-gradient {
   background-size: 200% 200%;
   animation: gradient 6s ease infinite;
+}
+
+/* Estilos para el menú desplegable */
+.dropdown-menu {
+  position: absolute;
+  min-width: 200px;
+}
+
+.dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 9px 9px 9px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+  z-index: 1;
+}
+
+.dropdown-menu::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #1f2937 transparent;
+  z-index: 2;
+}
+
+/* Ajuste para el triángulo decorativo */
+.dropdown-menu > div:first-child {
+  overflow: visible;
+  z-index: 3;
 }
 </style>
