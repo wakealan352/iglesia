@@ -143,9 +143,9 @@
         </div>
         <!-- Info -->
         <div
-          class="bg-[#fcd299] dark:bg-gray-600 p-4 text-center mt-12 rounded-lg"
+          class="bg-teal-600 dark:bg-gray-600 p-4 text-center mt-12 rounded-lg"
         >
-          <p class="text-[#6e2b62] dark:text-teal-200">
+          <p class="text-white">
             Su donación es importante para nosotros. Si tiene alguna pregunta,
             no dude en contactarnos.
           </p>
