@@ -318,6 +318,13 @@ export default {
       showDropdown: false,
       iconOptions: [
         {
+          value: "Cumpleaños",
+          label: "Cumpleaños",
+          colorClass: "bg-yellow-500",
+          icon: "cumple.svg",
+          colorName: "Amarillo",
+        },
+        {
           value: "Canasta de amor",
           label: "Canasta de amor",
           colorClass: "bg-red-500",
