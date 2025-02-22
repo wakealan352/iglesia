@@ -5,12 +5,14 @@
       'absolute -top-2 -right-2 rounded-full flex items-center justify-center hover:scale-110 transition duration-300 ease-in-out',
       sizeClasses,
       {
+        'bg-yellow-500': texto === 'Cumpleaños',
         'bg-red-500': texto === 'Canasta de amor',
         'bg-red-700': texto === 'Cena del Señor',
         'bg-pink-500': texto === 'Reunión de damas',
         'bg-green-500': texto === 'Domingo misionero',
         'bg-violet-500': texto === 'Culto de oración',
         'bg-teal-500': ![
+          'Cumpleaños',
           'Canasta de amor',
           'Cena del Señor',
           'Reunión de damas',
@@ -78,6 +80,7 @@ export default {
 
     iconSrc() {
       const iconMap = {
+        Cumpleaños: "/insignias/cumple.svg",
         "Cena del Señor": "/insignias/cena-del-senor.svg",
         "Culto de oración": "/insignias/culto-de-oracion.svg",
         "Canasta de amor": "/insignias/canasta-de-amor.svg",
@@ -85,7 +88,6 @@ export default {
         "Domingo misionero": "/insignias/domingo-misionero.svg",
         "Reunión de damas": "/insignias/reunion-de-damas.svg",
         "Reunión de varones": "/insignias/reunion-de-varones.svg",
-        Cumple: "/insignias/cumple.svg",
       };
 
       return iconMap[this.texto] || "/insignias/default.svg";

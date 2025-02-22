@@ -701,6 +701,7 @@ export default {
     },
     getColorClass(value) {
       const iconOptions = [
+        { value: "Cumpleaños", colorClass: "bg-yellow-500" },
         { value: "Canasta de amor", colorClass: "bg-red-500" },
         { value: "Cena del Señor", colorClass: "bg-red-700" },
         { value: "Reunión de damas", colorClass: "bg-pink-500" },
@@ -803,6 +804,7 @@ export default {
     },
     getIconFileName(value) {
       const iconOptions = [
+        { value: "Cumpleaños", icon: "cumple.svg" },
         { value: "Canasta de amor", icon: "canasta-de-amor.svg" },
         { value: "Cena del Señor", icon: "cena-del-senor.svg" },
         { value: "Reunión de damas", icon: "reunion-de-damas.svg" },
