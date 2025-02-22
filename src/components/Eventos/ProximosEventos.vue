@@ -64,6 +64,9 @@
                     <div
                       :class="[
                         'relative text-3xl font-bold text-black border py-2 px-6 rounded-md shadow-md bg-white folded-corner',
+                        evento.infoIconoTexto === 'Cumpleaños'
+                          ? 'border-t-yellow-500'
+                          : '',
                         evento.infoIconoTexto === 'Canasta de amor'
                           ? 'border-t-red-500'
                           : '',
@@ -79,6 +82,7 @@
                         evento.infoIconoTexto === 'Culto de oración'
                           ? 'border-t-violet-500'
                           : '',
+                        evento.infoIconoTexto !== 'Cumpleaños' &&
                         evento.infoIconoTexto !== 'Canasta de amor' &&
                         evento.infoIconoTexto !== 'Cena del Señor' &&
                         evento.infoIconoTexto !== 'Reunión de damas' &&
