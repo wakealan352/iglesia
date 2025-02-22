@@ -16,8 +16,10 @@
       <div
         class="relative z-10 flex flex-col justify-center items-center h-full text-center px-4 sm:px-6 lg:px-8 mt-12 sm:mt-20 font-asap"
       >
-        <h1 class="text-4xl md:text-6xl font-bold text-white">Donaciones</h1>
-        <p class="text-[#fcd299] text-xl max-w-3xl mt-6">
+        <h1 class="text-4xl md:text-6xl font-bold text-white dark:text-white">
+          Donaciones
+        </h1>
+        <p class="text-white text-xl max-w-3xl mt-6 dark:text-gray-100">
           Desde ya le agradecemos. Nuestro buen Dios sea glorificado en todas
           las cosas.
         </p>
@@ -30,16 +32,20 @@
       <div class="max-w-7xl mx-auto px-1 lg:py-16 sm:px-6 lg:px-8 font-asap">
         <!-- Bible Verse -->
         <div class="text-center mb-8">
-          <p class="text-[#6e2b62] text-xl italic mb-2 md:mt-32 sm:mt-12 mt-12">
+          <p
+            class="text-[#6e2b62] dark:text-teal-500 text-xl italic mb-2 md:mt-32 sm:mt-12 mt-12"
+          >
             "Cada uno dé como propuso en su corazón: no con tristeza, ni por
             necesidad, porque Dios ama al dador alegre."
           </p>
-          <p class="text-[#001e62] font-semibold">2 Corintios 9:7</p>
+          <p class="text-[#001e62] dark:text-teal-300 font-semibold">
+            2 Corintios 9:7
+          </p>
         </div>
 
         <!-- Donation Info -->
-        <div class="bg-white rounded-lg p-6 mb-12">
-          <p class="text-[#001e62] text-lg mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-12">
+          <p class="text-[#001e62] dark:text-gray-200 text-lg mb-8">
             ¡Gracias por hacer parte del crecimiento del Reino de Dios! Para
             poder realizar tu donación primero selecciona el medio que se ajuste
             más, luego continúa con los pasos indicados. Recuerda que la
@@ -54,8 +60,8 @@
               class="flex items-center justify-center space-x-2 py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
               :class="
                 selectedPayment === 'online'
-                  ? 'bg-[#001e62] text-white'
-                  : 'bg-[#dde5ed] text-[#001e62]'
+                  ? 'bg-teal-600 dark:bg-teal-500 text-white'
+                  : 'bg-[#dde5ed] dark:bg-gray-700 text-[#001e62] dark:text-gray-200'
               "
             >
               <span class="material-icons">language</span>
@@ -66,8 +72,8 @@
               class="flex items-center justify-center space-x-2 py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
               :class="
                 selectedPayment === 'cash'
-                  ? 'bg-[#001e62] text-white'
-                  : 'bg-[#dde5ed] text-[#001e62]'
+                  ? 'bg-teal-600 dark:bg-teal-500 text-white'
+                  : 'bg-[#dde5ed] dark:bg-gray-700 text-[#001e62] dark:text-gray-200'
               "
             >
               <span class="material-icons">payments</span>
@@ -78,8 +84,8 @@
               class="flex items-center justify-center space-x-2 py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
               :class="
                 selectedPayment === 'bank'
-                  ? 'bg-[#001e62] text-white'
-                  : 'bg-[#dde5ed] text-[#001e62]'
+                  ? 'bg-teal-600 dark:bg-teal-500 text-white'
+                  : 'bg-[#dde5ed] dark:bg-gray-700 text-[#001e62] dark:text-gray-200'
               "
             >
               <span class="material-icons">account_balance</span>
@@ -90,10 +96,10 @@
           <!-- Payment Information -->
           <div
             v-if="selectedPayment"
-            class="bg-white rounded-lg p-6 mb-8 border-l-4"
+            class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 border-l-4"
             :class="borderColorClass"
           >
-            <h3 class="text-2xl font-bold mb-4 text-[#001e62]">
+            <h3 class="text-2xl font-bold mb-4 text-[#001e62] dark:text-white">
               {{ paymentInfo.title }}
             </h3>
             <div class="space-y-4">
@@ -102,12 +108,17 @@
                 :key="index"
                 class="flex items-start space-x-3"
               >
-                <span class="material-icons text-[#001e62] mt-1">{{
-                  info.icon
-                }}</span>
+                <span
+                  class="material-icons text-[#001e62] dark:text-white mt-1"
+                  >{{ info.icon }}</span
+                >
                 <div>
-                  <h4 class="font-semibold text-[#001e62]">{{ info.title }}</h4>
-                  <p class="text-gray-600">{{ info.description }}</p>
+                  <h4 class="font-semibold text-[#001e62] dark:text-white">
+                    {{ info.title }}
+                  </h4>
+                  <p class="text-gray-600 dark:text-gray-300">
+                    {{ info.description }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -115,14 +126,14 @@
         </div>
 
         <!-- Certificate Info -->
-        <div class="text-center text-[#001e62]">
+        <div class="text-center text-[#001e62] dark:text-gray-200">
           <p class="text-lg">
             Solicita tu
             <span class="font-semibold">certificado de donaciones</span> al
             correo
             <a
               href="mailto:certificaciones@example.org"
-              class="text-[#a50034] hover:underline"
+              class="text-[#a50034] dark:text-teal-300 hover:underline"
             >
               correo@gmail.com
             </a>
@@ -131,8 +142,10 @@
           </p>
         </div>
         <!-- Info -->
-        <div class="bg-[#fcd299] p-4 text-center mt-12 rounded-lg">
-          <p class="text-[#6e2b62]">
+        <div
+          class="bg-[#fcd299] dark:bg-gray-600 p-4 text-center mt-12 rounded-lg"
+        >
+          <p class="text-[#6e2b62] dark:text-teal-200">
             Su donación es importante para nosotros. Si tiene alguna pregunta,
             no dude en contactarnos.
           </p>
@@ -225,11 +238,11 @@ const paymentInfo = computed(() => {
 const borderColorClass = computed(() => {
   switch (selectedPayment.value) {
     case "online":
-      return "border-blue-500";
+      return "border-teal-500";
     case "cash":
-      return "border-green-500";
+      return "border-teal-500";
     case "bank":
-      return "border-purple-500";
+      return "border-teal-500";
     default:
       return "";
   }
@@ -268,8 +281,8 @@ const showPaymentInfo = (type) => {
   mask-repeat: no-repeat;
   mask-position: top, center, bottom;
   mask-size: 100%;
-  background-color: #001e62;
-  background-image: linear-gradient(90deg, #001e62, #6e2b62);
+  background-color: #0d9488;
+  background-image: linear-gradient(90deg, #470d94, #14b8a6);
 }
 .above-mask-box {
   padding-bottom: var(--mask-head-size);
