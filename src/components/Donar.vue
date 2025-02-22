@@ -38,7 +38,7 @@
         </div>
 
         <!-- Donation Info -->
-        <div class="bg-white rounded-lg shadow-xl p-6 mb-12">
+        <div class="bg-white rounded-lg p-6 mb-12">
           <p class="text-[#001e62] text-lg mb-8">
             ¡Gracias por hacer parte del crecimiento del Reino de Dios! Para
             poder realizar tu donación primero selecciona el medio que se ajuste
@@ -50,23 +50,67 @@
           <!-- Payment Options -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <button
-              class="flex items-center justify-center space-x-2 bg-[#001e62] text-white py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
+              @click="showPaymentInfo('online')"
+              class="flex items-center justify-center space-x-2 py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
+              :class="
+                selectedPayment === 'online'
+                  ? 'bg-[#001e62] text-white'
+                  : 'bg-[#dde5ed] text-[#001e62]'
+              "
             >
               <span class="material-icons">language</span>
               <span>Pagos en línea</span>
             </button>
             <button
-              class="flex items-center justify-center space-x-2 bg-[#dde5ed] text-[#001e62] py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
+              @click="showPaymentInfo('cash')"
+              class="flex items-center justify-center space-x-2 py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
+              :class="
+                selectedPayment === 'cash'
+                  ? 'bg-[#001e62] text-white'
+                  : 'bg-[#dde5ed] text-[#001e62]'
+              "
             >
               <span class="material-icons">payments</span>
               <span>Pagos en efectivo</span>
             </button>
             <button
-              class="flex items-center justify-center space-x-2 bg-[#dde5ed] text-[#001e62] py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
+              @click="showPaymentInfo('bank')"
+              class="flex items-center justify-center space-x-2 py-4 px-6 rounded-lg hover:bg-opacity-90 transition-all"
+              :class="
+                selectedPayment === 'bank'
+                  ? 'bg-[#001e62] text-white'
+                  : 'bg-[#dde5ed] text-[#001e62]'
+              "
             >
               <span class="material-icons">account_balance</span>
               <span>Consignaciones</span>
             </button>
+          </div>
+
+          <!-- Payment Information -->
+          <div
+            v-if="selectedPayment"
+            class="bg-white rounded-lg p-6 mb-8 border-l-4"
+            :class="borderColorClass"
+          >
+            <h3 class="text-2xl font-bold mb-4 text-[#001e62]">
+              {{ paymentInfo.title }}
+            </h3>
+            <div class="space-y-4">
+              <div
+                v-for="(info, index) in paymentInfo.details"
+                :key="index"
+                class="flex items-start space-x-3"
+              >
+                <span class="material-icons text-[#001e62] mt-1">{{
+                  info.icon
+                }}</span>
+                <div>
+                  <h4 class="font-semibold text-[#001e62]">{{ info.title }}</h4>
+                  <p class="text-gray-600">{{ info.description }}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -99,7 +143,101 @@
 </template>
 
 <script setup>
-// Component logic can be added here if needed
+import { ref, computed } from "vue";
+
+const selectedPayment = ref(null);
+
+const paymentInfo = computed(() => {
+  switch (selectedPayment.value) {
+    case "online":
+      return {
+        title: "Pagos en Línea",
+        details: [
+          {
+            icon: "credit_card",
+            title: "Tarjeta de Crédito/Débito",
+            description:
+              "Aceptamos todas las tarjetas principales: Visa, MasterCard, American Express",
+          },
+          {
+            icon: "security",
+            title: "Pago Seguro",
+            description:
+              "Todas las transacciones están protegidas con encriptación SSL",
+          },
+          {
+            icon: "receipt_long",
+            title: "Comprobante Inmediato",
+            description:
+              "Recibirás un comprobante de donación en tu correo electrónico",
+          },
+        ],
+      };
+    case "cash":
+      return {
+        title: "Pagos en Efectivo",
+        details: [
+          {
+            icon: "schedule",
+            title: "Horario de Atención",
+            description: "Lunes a Viernes de 9:00 AM a 5:00 PM",
+          },
+          {
+            icon: "location_on",
+            title: "Dirección",
+            description: "Calle Principal #123, Ciudad",
+          },
+          {
+            icon: "info",
+            title: "Información Adicional",
+            description:
+              "Por favor traer identificación válida para donaciones mayores a $500",
+          },
+        ],
+      };
+    case "bank":
+      return {
+        title: "Consignaciones Bancarias",
+        details: [
+          {
+            icon: "account_balance",
+            title: "Cuenta Bancaria",
+            description: "Banco Example - Cuenta Corriente: 1234-5678-9012",
+          },
+          {
+            icon: "business",
+            title: "Titular de la Cuenta",
+            description: "Iglesia Bautista Su Gracia es Mayor",
+          },
+          {
+            icon: "description",
+            title: "Proceso de Verificación",
+            description:
+              "Enviar comprobante de consignación al correo: donaciones@example.com",
+          },
+        ],
+      };
+    default:
+      return null;
+  }
+});
+
+const borderColorClass = computed(() => {
+  switch (selectedPayment.value) {
+    case "online":
+      return "border-blue-500";
+    case "cash":
+      return "border-green-500";
+    case "bank":
+      return "border-purple-500";
+    default:
+      return "";
+  }
+});
+
+const showPaymentInfo = (type) => {
+  selectedPayment.value = type;
+};
 </script>
 
 <style>

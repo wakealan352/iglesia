@@ -46,39 +46,63 @@
                 </a>
               </li>
 
+              <!-- Menú desplegable de Conócenos -->
+              <li class="relative">
+                <button
+                  @click.stop="toggleConocenosMenu"
+                  class="flex items-center ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Conócenos
+                  <svg
+                    class="w-4 h-4 ml-2 transition-transform duration-200"
+                    :class="{ 'rotate-180': isConocenosOpen }"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                <div
+                  v-show="isConocenosOpen"
+                  class="absolute left-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl py-2 z-50"
+                >
+                  <a
+                    href="/#pastor"
+                    class="block px-4 py-2 text-white hover:text-teal-400"
+                    @click="closeConocenosMenu"
+                  >
+                    Pastor
+                  </a>
+                  <a
+                    href="/#servicio"
+                    class="block px-4 py-2 text-white hover:text-teal-400"
+                    @click="closeConocenosMenu"
+                  >
+                    Servicios
+                  </a>
+                  <a
+                    href="/#ministerios"
+                    class="block px-4 py-2 text-white hover:text-teal-400"
+                    @click="closeConocenosMenu"
+                  >
+                    Ministerios
+                  </a>
+                </div>
+              </li>
+
               <li>
                 <a
                   href="/#anuncios"
                   class="ease-in duration-150 text-white hover:text-teal-400"
                 >
                   Anuncios y Eventos
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/#pastor"
-                  class="ease-in duration-150 text-white hover:text-teal-400"
-                >
-                  Pastor
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/#servicio"
-                  class="ease-in duration-150 text-white hover:text-teal-400"
-                >
-                  Servicios
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/#ministerios"
-                  class="ease-in duration-150 text-white hover:text-teal-400"
-                >
-                  Ministerios
                 </a>
               </li>
 
@@ -97,6 +121,15 @@
                   class="ease-in duration-150 text-white hover:text-teal-400"
                 >
                   Preguntas frecuentes
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/donaciones"
+                  class="ease-in duration-150 text-white hover:text-teal-400"
+                >
+                  Donaciones
                 </a>
               </li>
             </ul>
@@ -231,8 +264,8 @@
     v-show="isMenuOpen"
     class="fixed top-[72px] left-0 right-0 z-40 animate__animated lg:hidden p-4 bg-gray-800"
     :class="{
-      'animate__slideInDown': isMenuOpen && !isClosing,
-      'animate__slideOutUp': isClosing
+      animate__slideInDown: isMenuOpen && !isClosing,
+      animate__slideOutUp: isClosing,
     }"
     @animationend="handleAnimationEnd"
   >
@@ -289,6 +322,7 @@ export default {
       currentPath: "",
       isMenuOpen: false,
       isClosing: false,
+      isConocenosOpen: false,
       menuItems: [
         { href: "/#inicio", text: "Inicio" },
         { href: "/#anuncios", text: "Anuncios y Eventos" },
@@ -297,6 +331,7 @@ export default {
         { href: "/#ministerios", text: "Ministerios" },
         { href: "/confesion", text: "Confesión de fe" },
         { href: "/preguntas", text: "Preguntas frecuentes" },
+        { href: "/donaciones", text: "Donaciones" },
       ],
     };
   },
@@ -304,18 +339,21 @@ export default {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
       this.isClosing = false;
-      document.body.style.overflow = this.isMenuOpen ? "hidden" : "";
+      document.body.style.overflow = this.isMenuOpen ? "hidden" : "auto";
     },
     closeMenu() {
       if (this.isMenuOpen) {
         this.isClosing = true;
-        document.body.style.overflow = "";
+        document.body.style.overflow = "auto";
       }
+      this.isAdminMenuVisible = false;
+      this.isConocenosOpen = false;
     },
     handleAnimationEnd() {
       if (this.isClosing) {
         this.isMenuOpen = false;
         this.isClosing = false;
+        document.body.style.overflow = "auto";
       }
     },
     toggleDarkMode() {
@@ -349,12 +387,16 @@ export default {
       // Si el menú móvil está abierto y se hace clic fuera de él
       if (this.isMenuOpen) {
         const mobileMenu = this.$el.querySelector(".fixed.top-\\[72px\\]");
-        const hamburgerButton = this.$el.querySelector("button[class*='lg:hidden']");
-        
+        const hamburgerButton = this.$el.querySelector(
+          "button[class*='lg:hidden']"
+        );
+
         // Verificar si el clic fue fuera del menú y del botón hamburguesa
-        if (mobileMenu && 
-            !mobileMenu.contains(event.target) && 
-            !hamburgerButton.contains(event.target)) {
+        if (
+          mobileMenu &&
+          !mobileMenu.contains(event.target) &&
+          !hamburgerButton.contains(event.target)
+        ) {
           this.closeMenu();
         }
       }
@@ -444,11 +486,17 @@ export default {
         );
       }
     },
+    toggleConocenosMenu() {
+      this.isConocenosOpen = !this.isConocenosOpen;
+    },
+    closeConocenosMenu() {
+      this.isConocenosOpen = false;
+    },
   },
   mounted() {
     this.loadDarkModePreference();
     this.checkAuthStatus();
-    
+
     // Agregar el event listener al document
     document.body.addEventListener("click", this.handleDocumentClick);
 
@@ -480,6 +528,24 @@ export default {
 <style scoped>
 .nav-menu a {
   transition: color 0.3s ease;
+}
+
+/* Estilos para el menú desplegable */
+.nav-menu .relative > div {
+  transform-origin: top;
+  transition: all 0.3s ease;
+}
+
+.nav-menu button {
+  cursor: pointer;
+}
+
+.nav-menu .relative > div a {
+  transition: all 0.2s ease;
+}
+
+.nav-menu .relative > div a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 @keyframes gradient {
