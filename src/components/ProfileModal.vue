@@ -50,7 +50,9 @@
             id="displayName"
             v-model="formData.displayName"
             :placeholder="currentDisplayName || 'Ingresa tu nombre de usuario'"
+            :readonly="!!currentDisplayName"
             class="w-full px-3 py-2 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            :class="{ 'cursor-not-allowed opacity-75': !!currentDisplayName }"
             required
           />
         </div>
@@ -67,7 +69,7 @@
             :class="[
               isSuccess ? 'text-white' : 'bg-teal-500 hover:bg-teal-600',
             ]"
-            :disabled="isLoading || isSuccess"
+            :disabled="isLoading || isSuccess || !!currentDisplayName"
           >
             <div class="relative z-10">
               {{
@@ -75,6 +77,8 @@
                   ? "Guardando..."
                   : isSuccess
                   ? "Guardado exitosamente"
+                  : !!currentDisplayName
+                  ? "No se puede modificar"
                   : "Guardar cambios"
               }}
             </div>
