@@ -244,8 +244,16 @@ const handleNavigation = (path) => {
   window.location.href = path;
 };
 
-const handleLogout = () => {
-  window.location.href = "/logout";
+const handleLogout = async () => {
+  try {
+    await auth_api.logout();
+    // Redirigir a la página de despedida después del logout exitoso
+    window.location.replace("/logout");
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+    // En caso de error, forzar la redirección de todas formas
+    window.location.replace("/logout");
+  }
 };
 
 const openChangePassword = () => {

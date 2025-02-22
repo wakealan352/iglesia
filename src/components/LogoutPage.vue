@@ -3,8 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { auth_api } from "../lib/api";
 
 const countdown = ref(7);
-const redirecting = ref(false);
-let unsubscribe: (() => void) | null = null;
+let timer: NodeJS.Timeout;
 
 const clearAuthState = () => {
   // Limpiar el estado de autenticación
@@ -20,21 +19,19 @@ const clearAuthState = () => {
 };
 
 onMounted(() => {
-  // Nos suscribimos a los cambios de estado de autenticación
-  unsubscribe = auth_api.onAuthStateChange((user) => {
-    if (user) {
-      handleLogout();
-    } else {
-      // Si no hay usuario, redirigimos a inicio
+  // Iniciar la cuenta regresiva directamente
+  timer = setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      clearInterval(timer);
       window.location.replace("/");
     }
-  });
+  }, 1000);
 });
 
 onUnmounted(() => {
-  // Limpiamos la suscripción cuando el componente se desmonta
-  if (unsubscribe) {
-    unsubscribe();
+  if (timer) {
+    clearInterval(timer);
   }
 });
 
@@ -44,8 +41,7 @@ const handleLogout = async () => {
     await auth_api.logout();
 
     // Iniciar la cuenta regresiva
-    redirecting.value = true;
-    const timer = setInterval(() => {
+    timer = setInterval(() => {
       countdown.value--;
       if (countdown.value <= 0) {
         clearInterval(timer);
