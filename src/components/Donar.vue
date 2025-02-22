@@ -44,7 +44,7 @@
         </div>
 
         <!-- Donation Info -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-12">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-2 mb-12">
           <p class="text-[#001e62] dark:text-gray-200 text-lg mb-8">
             ¡Gracias por hacer parte del crecimiento del Reino de Dios! Para
             poder realizar tu donación primero selecciona el medio que se ajuste
