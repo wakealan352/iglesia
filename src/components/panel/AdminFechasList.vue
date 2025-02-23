@@ -260,7 +260,7 @@
                   :title="fecha.infoIconoTexto"
                 >
                   <img
-                    v-if="fecha.infoAdiccional === '1'"
+                    v-if="fecha.infoAdiccional === 1"
                     :src="`/insignias/${getIconFileName(fecha.infoIconoTexto)}`"
                     :alt="fecha.infoIconoTexto"
                     class="w-4 h-4"
@@ -488,7 +488,7 @@
                           :title="fecha.infoIconoTexto"
                         >
                           <img
-                            v-if="fecha.infoAdiccional === '1'"
+                            v-if="fecha.infoAdiccional === 1"
                             :src="`/insignias/${getIconFileName(
                               fecha.infoIconoTexto
                             )}`"
@@ -637,7 +637,12 @@ export default {
       try {
         this.isLoading = true;
         const response = await fechas.getAll();
-        this.fechas = this.sortFechas(response.data);
+        // Convertir infoAdiccional a número en cada fecha
+        const fechasConvertidas = response.data.map((fecha) => ({
+          ...fecha,
+          infoAdiccional: Number(fecha.infoAdiccional),
+        }));
+        this.fechas = this.sortFechas(fechasConvertidas);
       } catch (error) {
         console.error("Error al cargar fechas:", error);
         this.errorMessage = "Error al cargar las fechas";
