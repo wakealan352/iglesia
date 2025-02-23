@@ -82,12 +82,16 @@
                         evento.infoIconoTexto === 'Culto de oración'
                           ? 'border-t-violet-500'
                           : '',
+                        evento.infoIconoTexto === 'Reunión de varones'
+                          ? 'border-t-blue-500'
+                          : '',
                         evento.infoIconoTexto !== 'Cumpleaños' &&
                         evento.infoIconoTexto !== 'Canasta de amor' &&
                         evento.infoIconoTexto !== 'Cena del Señor' &&
                         evento.infoIconoTexto !== 'Reunión de damas' &&
                         evento.infoIconoTexto !== 'Domingo misionero' &&
-                        evento.infoIconoTexto !== 'Culto de oración'
+                        evento.infoIconoTexto !== 'Culto de oración' &&
+                        evento.infoIconoTexto !== 'Reunión de varones'
                           ? 'border-t-teal-500'
                           : '',
                         'border-t-4',

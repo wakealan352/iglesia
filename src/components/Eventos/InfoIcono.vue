@@ -11,6 +11,7 @@
         'bg-pink-500': texto === 'Reunión de damas',
         'bg-green-500': texto === 'Domingo misionero',
         'bg-violet-500': texto === 'Culto de oración',
+        'bg-blue-500': texto === 'Reunión de varones',
         'bg-teal-500': ![
           'Cumpleaños',
           'Canasta de amor',
@@ -18,6 +19,7 @@
           'Reunión de damas',
           'Domingo misionero',
           'Culto de oración',
+          'Reunión de varones',
         ].includes(texto),
       },
     ]"
