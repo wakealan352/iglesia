@@ -318,6 +318,13 @@ export default {
       showDropdown: false,
       iconOptions: [
         {
+          value: "Reunión de jovenes",
+          label: "Reunión de jovenes",
+          colorClass: "bg-teal-500",
+          icon: "reunion-de-jovenes.svg",
+          colorName: "Verde Azulado",
+        },
+        {
           value: "Cumpleaños",
           label: "Cumpleaños",
           colorClass: "bg-yellow-500",
@@ -353,13 +360,6 @@ export default {
           colorName: "Azul",
         },
         {
-          value: "Reunión de jovenes",
-          label: "Reunión de jovenes",
-          colorClass: "bg-teal-500",
-          icon: "reunion-de-jovenes.svg",
-          colorName: "Verde Azulado",
-        },
-        {
           value: "Domingo misionero",
           label: "Domingo misionero",
           colorClass: "bg-green-500",
@@ -381,7 +381,7 @@ export default {
         lugar: "",
         descripcion: "",
         infoAdiccional: 0,
-        tipoIcono: "",
+        tipoIcono: "Reunión de jovenes",
         infoIconoTexto: "",
         banner: "",
         tieneBanner: false,
@@ -421,7 +421,7 @@ export default {
         lugar: "",
         descripcion: "",
         infoAdiccional: 0,
-        tipoIcono: "",
+        tipoIcono: "Reunión de jovenes",
         infoIconoTexto: "",
         banner: "",
         tieneBanner: false,
