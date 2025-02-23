@@ -707,7 +707,7 @@ export default {
         { value: "Cena del Señor", colorClass: "bg-red-700" },
         { value: "Reunión de damas", colorClass: "bg-pink-500" },
         { value: "Reunión de varones", colorClass: "bg-blue-500" },
-        { value: "Reunión de jovenes", colorClass: "bg-teal-500" },
+        { value: "Reunión de jovenes", colorClass: "bg-indigo-500" },
         { value: "Domingo misionero", colorClass: "bg-green-500" },
         { value: "Culto de oración", colorClass: "bg-violet-500" },
       ];
