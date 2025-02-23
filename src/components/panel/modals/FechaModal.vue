@@ -138,15 +138,21 @@
 
               <div class="relative">
                 <select
-                  v-model="fechaForm.infoAdiccional"
+                  v-model.number="fechaForm.infoAdiccional"
                   id="infoAdiccional"
                   class="block px-2.5 pb-2.5 pt-4 w-full text-sm bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-500 peer dark:bg-gray-700"
                   required
                 >
-                  <option value="1" class="dark:bg-gray-700 dark:text-gray-300">
+                  <option
+                    :value="1"
+                    class="dark:bg-gray-700 dark:text-gray-300"
+                  >
                     Sí
                   </option>
-                  <option value="0" class="dark:bg-gray-700 dark:text-gray-300">
+                  <option
+                    :value="0"
+                    class="dark:bg-gray-700 dark:text-gray-300"
+                  >
                     No
                   </option>
                 </select>
@@ -180,8 +186,7 @@
                     >
                       <img
                         v-if="
-                          fechaForm.tipoIcono &&
-                          fechaForm.infoAdiccional === '1'
+                          fechaForm.tipoIcono && fechaForm.infoAdiccional === 1
                         "
                         :src="`/insignias/${getIconFileName(
                           fechaForm.tipoIcono
@@ -191,7 +196,7 @@
                       />
                     </span>
                     {{
-                      fechaForm.infoAdiccional === "1"
+                      fechaForm.infoAdiccional === 1
                         ? fechaForm.tipoIcono || "Seleccione una opción"
                         : getColorName(fechaForm.tipoIcono) ||
                           "Seleccione una opción"
@@ -203,7 +208,7 @@
                   class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 left-1"
                 >
                   {{
-                    fechaForm.infoAdiccional === "1"
+                    fechaForm.infoAdiccional === 1
                       ? "Seleccionar Icono"
                       : "Resaltar Color Fecha"
                   }}
@@ -224,14 +229,14 @@
                         :class="option.colorClass"
                       >
                         <img
-                          v-if="fechaForm.infoAdiccional === '1'"
+                          v-if="fechaForm.infoAdiccional === 1"
                           :src="`/insignias/${option.icon}`"
                           :alt="option.label"
                           class="w-4 h-4"
                         />
                       </span>
                       {{
-                        fechaForm.infoAdiccional === "1"
+                        fechaForm.infoAdiccional === 1
                           ? option.label
                           : option.colorName
                       }}
@@ -402,6 +407,8 @@ export default {
       handler(fecha) {
         if (fecha) {
           this.fechaForm = { ...fecha };
+          // Asegurar que infoAdiccional sea numérico
+          this.fechaForm.infoAdiccional = Number(this.fechaForm.infoAdiccional);
           this.fechaForm.tieneBanner = !!fecha.banner;
           if (this.fechaForm.fecha) {
             // Convertir la fecha a la zona horaria de Bogotá
