@@ -20,6 +20,7 @@
             evento.infoIconoTexto === 'Reunión de damas' ? 'bg-pink-500' : '',
             evento.infoIconoTexto === 'Domingo misionero' ? 'bg-green-500' : '',
             evento.infoIconoTexto === 'Culto de oración' ? 'bg-violet-500' : '',
+            evento.infoIconoTexto === 'Reunión de varones' ? 'bg-blue-500' : '',
             ![
               'Cumpleaños',
               'Canasta de amor',
@@ -27,6 +28,7 @@
               'Reunión de damas',
               'Domingo misionero',
               'Culto de oración',
+              'Reunión de varones',
             ].includes(evento.infoIconoTexto)
               ? 'bg-teal-500'
               : '',
