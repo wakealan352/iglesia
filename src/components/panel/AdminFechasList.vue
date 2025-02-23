@@ -700,6 +700,7 @@ export default {
       });
     },
     getColorClass(value) {
+      if (value === "Info") return "bg-teal-500";
       const iconOptions = [
         { value: "Cumpleaños", colorClass: "bg-yellow-500" },
         { value: "Canasta de amor", colorClass: "bg-red-500" },
@@ -711,7 +712,7 @@ export default {
         { value: "Culto de oración", colorClass: "bg-violet-500" },
       ];
       const option = iconOptions.find((opt) => opt.value === value);
-      return option ? option.colorClass : "";
+      return option ? option.colorClass : "bg-teal-500";
     },
     getDiasRestantes(fecha) {
       // Obtener fecha actual en Bogotá
@@ -803,6 +804,7 @@ export default {
       }
     },
     getIconFileName(value) {
+      if (value === "Info") return "default.svg";
       const iconOptions = [
         { value: "Cumpleaños", icon: "cumple.svg" },
         { value: "Canasta de amor", icon: "canasta-de-amor.svg" },

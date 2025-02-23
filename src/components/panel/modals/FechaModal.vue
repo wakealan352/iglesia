@@ -318,6 +318,14 @@ export default {
       showDropdown: false,
       iconOptions: [
         {
+          value: "Info",
+          label: "Info",
+          colorClass: "bg-teal-500",
+          icon: "default.svg",
+          colorName: "Verde Azulado",
+          noTooltip: true,
+        },
+        {
           value: "Reunión de jovenes",
           label: "Reunión de jovenes",
           colorClass: "bg-teal-500",
@@ -441,8 +449,10 @@ export default {
     },
     selectOption(option) {
       this.fechaForm.tipoIcono = option.value;
-      if (option.value !== "personalizado") {
+      if (option.value !== "personalizado" && !option.noTooltip) {
         this.fechaForm.infoIconoTexto = option.value;
+      } else {
+        this.fechaForm.infoIconoTexto = "";
       }
       this.showDropdown = false;
     },
